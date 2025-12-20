@@ -22,7 +22,8 @@ CleanCopy removes them automatically. Copy a link, share a clean link.
 
 **Homebrew** (recommended):
 ```bash
-brew install maferland/tap/cleancopy
+brew tap maferland/tap
+brew install cleancopy
 ```
 
 **Manual**: Download DMG from [Releases](https://github.com/maferland/clean-copy/releases), open it, drag `CleanCopy` to `Install Here`.
