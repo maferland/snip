@@ -1,5 +1,9 @@
 # CleanCopy
 
+<p align="center">
+  <img src="assets/icon.png" width="128" height="128" alt="CleanCopy Icon">
+</p>
+
 > Automatically strip tracking junk from URLs when you copy them.
 
 You copy `https://example.com/article?utm_source=twitter&utm_medium=social&fbclid=abc123`
