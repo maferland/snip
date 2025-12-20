@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MenuBarView: View {
     @ObservedObject var monitor: ClipboardMonitor
+    @State private var launchAtLogin = LaunchAtLogin.isEnabled
     let supportURL = URL(string: "https://buymeacoffee.com/maferland")!
 
     var body: some View {
@@ -12,6 +13,20 @@ struct MenuBarView: View {
             .toggleStyle(.checkbox)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
+
+            Toggle(isOn: $launchAtLogin) {
+                Text("Start at Login")
+            }
+            .toggleStyle(.checkbox)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .onChange(of: launchAtLogin) { _, newValue in
+                if newValue {
+                    LaunchAtLogin.enable()
+                } else {
+                    LaunchAtLogin.disable()
+                }
+            }
 
             Divider()
 
