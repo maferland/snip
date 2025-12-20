@@ -20,9 +20,14 @@ CleanCopy removes them automatically. Copy a link, share a clean link.
 
 ## Install
 
-**Download** the DMG from [Releases](https://github.com/maferland/clean-copy/releases), open it, and drag `CleanCopy` to the `Install Here` folder.
+**Homebrew** (recommended):
+```bash
+brew install maferland/tap/cleancopy
+```
 
-Or build from source:
+**Manual**: Download DMG from [Releases](https://github.com/maferland/clean-copy/releases), open it, drag `CleanCopy` to `Install Here`.
+
+**Build from source**:
 ```bash
 git clone https://github.com/maferland/clean-copy.git
 cd clean-copy
