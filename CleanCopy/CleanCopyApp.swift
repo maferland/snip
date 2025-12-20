@@ -38,6 +38,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let monitor = ClipboardMonitor()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Hide dock icon - makes app menu bar only
+        NSApp.setActivationPolicy(.accessory)
+
         monitor.start()
         requestNotificationPermission()
     }
