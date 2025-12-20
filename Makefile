@@ -24,6 +24,7 @@ release: test build
 	@rm -rf /tmp/CleanCopy-dmg
 	@mkdir -p /tmp/CleanCopy-dmg
 	@cp .build/release/CleanCopy /tmp/CleanCopy-dmg/
+	@cp assets/icon.png /tmp/CleanCopy-dmg/.background.png 2>/dev/null || true
 	@ln -s /usr/local/bin /tmp/CleanCopy-dmg/Install\ Here
 	hdiutil create -volname "CleanCopy $(NEXT_VERSION)" \
 		-srcfolder /tmp/CleanCopy-dmg \
