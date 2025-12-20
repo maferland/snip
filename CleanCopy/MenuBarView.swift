@@ -6,52 +6,114 @@ struct MenuBarView: View {
     let supportURL = URL(string: "https://buymeacoffee.com/maferland")!
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Toggle(isOn: $monitor.isEnabled) {
-                Text(monitor.isEnabled ? "Enabled" : "Disabled")
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Image(systemName: "link")
+                    .font(.title2)
+                    .foregroundStyle(.blue)
+                Text("CleanCopy")
+                    .font(.headline)
+                Spacer()
+                Circle()
+                    .fill(monitor.isEnabled ? .green : .gray.opacity(0.5))
+                    .frame(width: 10, height: 10)
             }
-            .toggleStyle(.checkbox)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-
-            Toggle(isOn: $launchAtLogin) {
-                Text("Start at Login")
-            }
-            .toggleStyle(.checkbox)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .onChange(of: launchAtLogin) { _, newValue in
-                if newValue {
-                    LaunchAtLogin.enable()
-                } else {
-                    LaunchAtLogin.disable()
-                }
-            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
 
             Divider()
 
-            Button {
-                NSWorkspace.shared.open(supportURL)
-            } label: {
+            // Status
+            if let result = monitor.lastResult, result.didChange {
                 HStack {
-                    Text("Support")
-                    Text("☕")
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                    Text("Removed \(result.removedParams.count) tracker\(result.removedParams.count == 1 ? "" : "s")")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
                 }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+
+                Divider()
             }
-            .buttonStyle(.plain)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+
+            // Controls
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Toggle("", isOn: $monitor.isEnabled)
+                        .toggleStyle(.switch)
+                        .controlSize(.small)
+                        .labelsHidden()
+                    Text("Enabled")
+                    Spacer()
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
+
+                HStack {
+                    Toggle("", isOn: $launchAtLogin)
+                        .toggleStyle(.switch)
+                        .controlSize(.small)
+                        .labelsHidden()
+                        .onChange(of: launchAtLogin) { _, newValue in
+                            if newValue {
+                                LaunchAtLogin.enable()
+                            } else {
+                                LaunchAtLogin.disable()
+                            }
+                        }
+                    Text("Start at Login")
+                    Spacer()
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
+            }
+            .padding(.vertical, 6)
 
             Divider()
 
-            Button("Quit CleanCopy") {
-                NSApplication.shared.terminate(nil)
+            // Actions
+            VStack(spacing: 0) {
+                Button {
+                    NSWorkspace.shared.open(supportURL)
+                } label: {
+                    HStack {
+                        Label("Support", systemImage: "heart")
+                        Spacer()
+                        Text("☕")
+                    }
+                }
+                .buttonStyle(MenuButtonStyle())
+
+                Button {
+                    NSApplication.shared.terminate(nil)
+                } label: {
+                    HStack {
+                        Label("Quit", systemImage: "xmark.circle")
+                        Spacer()
+                        Text("⌘Q")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .buttonStyle(MenuButtonStyle())
+                .keyboardShortcut("q")
             }
-            .buttonStyle(.plain)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .keyboardShortcut("q")
         }
-        .frame(width: 180)
+        .frame(width: 220)
+    }
+}
+
+struct MenuButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(configuration.isPressed ? Color.gray.opacity(0.2) : Color.clear)
+            .contentShape(Rectangle())
     }
 }
