@@ -4,3 +4,4 @@
 DerivedData/
 *.zip
 *.dmg
+.DS_Store
