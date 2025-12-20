@@ -1,6 +1,6 @@
 import Foundation
 
-struct SanitizeResult {
+struct SanitizeResult: Equatable {
     let cleaned: String
     let removedParams: [String]
 
