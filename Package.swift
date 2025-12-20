@@ -7,7 +7,8 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "CleanCopy",
-            path: "CleanCopy"
+            path: "CleanCopy",
+            resources: [.process("Resources")]
         ),
         .testTarget(
             name: "CleanCopyTests",
