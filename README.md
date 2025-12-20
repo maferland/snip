@@ -1,29 +1,71 @@
 # CleanCopy
 
-macOS menu bar app that automatically strips tracking parameters from copied URLs.
+> Automatically strip tracking junk from URLs when you copy them.
 
-## Features
+You copy `https://example.com/article?utm_source=twitter&utm_medium=social&fbclid=abc123`
 
-- Runs silently in menu bar
-- Detects URLs when you copy them
-- Removes tracking params (utm_*, fbclid, gclid, si, etc.)
-- Toggle on/off from menu
-- "Start at Login" option in menu
+Your clipboard gets `https://example.com/article`
+
+No action needed. Just copy links like normal.
+
+## Why?
+
+Every link you share is full of tracking garbage. `utm_source`, `fbclid`, `gclid` — they let companies track where you came from and follow you around the web.
+
+CleanCopy removes them automatically. Copy a link, share a clean link.
 
 ## Install
 
-Build from source:
+**Download** the latest release from [Releases](https://github.com/maferland/clean-copy/releases).
+
+Or build from source:
 ```bash
+git clone https://github.com/maferland/clean-copy.git
+cd clean-copy
 swift build -c release
 sudo cp .build/release/CleanCopy /usr/local/bin/
 ```
 
-Then run `CleanCopy` and enable "Start at Login" from the menu.
+## Usage
 
-## Blocked Parameters
+Run `CleanCopy`. A link icon appears in your menu bar. That's it.
 
-utm_source, utm_medium, utm_campaign, utm_term, utm_content, utm_id, fbclid, fb_action_ids, fb_action_types, gclid, gclsrc, dclid, msclkid, twclid, si, ref, ref_src, ref_url, mc_eid, mc_cid, _hsenc, _hsmi, oly_enc_id, oly_anon_id, vero_id, vero_conv, s_kwcid, igshid
+- **Enabled/Disabled** — Toggle cleaning on/off
+- **Start at Login** — Run automatically when you log in
+- **Quit** — Stop the app
+
+## What Gets Removed
+
+| Tracker | Source |
+|---------|--------|
+| `utm_*` | Google Analytics |
+| `fbclid` | Facebook |
+| `gclid`, `dclid` | Google Ads |
+| `msclkid` | Microsoft/Bing |
+| `twclid` | Twitter/X |
+| `si` | Spotify |
+| `igshid` | Instagram |
+| `mc_eid`, `mc_cid` | Mailchimp |
+| `_hsenc`, `_hsmi` | HubSpot |
+| `ref`, `ref_src` | Generic referral |
+
+[Full list in source](CleanCopy/TrackingParams.swift)
+
+## Privacy
+
+CleanCopy runs entirely on your Mac. No network requests. No data collection. No analytics (ironic, right?).
+
+## Requirements
+
+- macOS 14 (Sonoma) or later
+- ~5MB disk space
 
 ## Support
 
-[Buy me a coffee](https://buymeacoffee.com/maferland)
+If CleanCopy saves you from tracking junk, consider buying me a coffee:
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://buymeacoffee.com/maferland)
+
+## License
+
+MIT
