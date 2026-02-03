@@ -12,7 +12,11 @@ cask "cleancopy" do
     strategy :github_latest
   end
 
-  binary "CleanCopy"
+  depends_on macos: ">= :sonoma"
 
-  zap trash: "~/Library/LaunchAgents/com.cleancopy.launcher.plist"
+  app "CleanCopy.app"
+
+  zap trash: [
+    "~/Library/Preferences/com.maferland.CleanCopy.plist",
+  ]
 end
