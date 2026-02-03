@@ -1,36 +1,24 @@
-import Foundation
+import ServiceManagement
 
 enum LaunchAtLogin {
-    private static let plistPath: URL = {
-        let home = FileManager.default.homeDirectoryForCurrentUser
-        return home.appendingPathComponent("Library/LaunchAgents/com.maferland.CleanCopy.plist")
-    }()
-
-    private static let executablePath = "/usr/local/bin/CleanCopy"
-
     static var isEnabled: Bool {
-        FileManager.default.fileExists(atPath: plistPath.path)
+        SMAppService.mainApp.status == .enabled
     }
 
     static func enable() {
-        let plist: [String: Any] = [
-            "Label": "com.maferland.CleanCopy",
-            "ProgramArguments": [executablePath],
-            "RunAtLoad": true,
-            "KeepAlive": false
-        ]
-
-        // Create LaunchAgents directory if needed
-        let dir = plistPath.deletingLastPathComponent()
-        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-
-        // Write plist
-        let data = try? PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
-        try? data?.write(to: plistPath)
+        do {
+            try SMAppService.mainApp.register()
+        } catch {
+            print("Failed to enable launch at login: \(error)")
+        }
     }
 
     static func disable() {
-        try? FileManager.default.removeItem(at: plistPath)
+        do {
+            try SMAppService.mainApp.unregister()
+        } catch {
+            print("Failed to disable launch at login: \(error)")
+        }
     }
 
     static func toggle() {
