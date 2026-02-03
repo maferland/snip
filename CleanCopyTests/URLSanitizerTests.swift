@@ -81,4 +81,26 @@ struct URLSanitizerTests {
         let result = sanitizer.sanitize(input)
         #expect(result.cleaned == "https://example.com/")
     }
+
+    @Test("handles URL with trailing punctuation")
+    func handlesTrailingPunctuation() {
+        let input = "Check this: https://example.com/?fbclid=123."
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "Check this: https://example.com/.")
+    }
+
+    @Test("handles URL in parentheses")
+    func handlesParentheses() {
+        let input = "(see https://example.com/?utm_source=x)"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "(see https://example.com/)")
+    }
+
+    @Test("handles mixed tracking and legit params")
+    func handlesMixedParams() {
+        let input = "https://example.com/search?q=test&utm_source=google&page=2&fbclid=abc"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://example.com/search?q=test&page=2")
+        #expect(Set(result.removedParams) == Set(["utm_source", "fbclid"]))
+    }
 }

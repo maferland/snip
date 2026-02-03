@@ -17,4 +17,17 @@ struct TrackingParamsTests {
         #expect(!TrackingParams.blocklist.contains("page"))
         #expect(!TrackingParams.blocklist.contains("q"))
     }
+
+    @Test("blocklist contains only lowercase keys")
+    func blocklistIsLowercase() {
+        for param in TrackingParams.blocklist {
+            #expect(param == param.lowercased(), "Param '\(param)' should be lowercase")
+        }
+    }
+
+    @Test("blocklist has no duplicates")
+    func blocklistHasNoDuplicates() {
+        let array = Array(TrackingParams.blocklist)
+        #expect(array.count == Set(array).count, "Blocklist contains duplicates")
+    }
 }
