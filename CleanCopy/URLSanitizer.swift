@@ -29,10 +29,10 @@ final class URLSanitizer {
 
             let originalItems = components.queryItems ?? []
             let filteredItems = originalItems.filter { item in
-                !TrackingParams.blocklist.contains(item.name)
+                !TrackingParams.blocklist.contains(item.name.lowercased())
             }
 
-            let removed = originalItems.filter { TrackingParams.blocklist.contains($0.name) }.map(\.name)
+            let removed = originalItems.filter { TrackingParams.blocklist.contains($0.name.lowercased()) }.map(\.name)
             removedParams.append(contentsOf: removed)
 
             if removed.isEmpty { continue }
