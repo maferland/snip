@@ -26,14 +26,13 @@ brew tap maferland/tap
 brew install --cask cleancopy
 ```
 
-**Manual**: Download DMG from [Releases](https://github.com/maferland/clean-copy/releases), open it, drag `CleanCopy` to `Install Here`.
+**Manual**: Download DMG from [Releases](https://github.com/maferland/clean-copy/releases), open it, drag `CleanCopy.app` to Applications.
 
 **Build from source**:
 ```bash
 git clone https://github.com/maferland/clean-copy.git
 cd clean-copy
-swift build -c release
-sudo cp .build/release/CleanCopy /usr/local/bin/
+make install
 ```
 
 ## Usage
@@ -76,6 +75,10 @@ If CleanCopy saves you from tracking junk, consider buying me a coffee:
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://buymeacoffee.com/maferland)
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE)
