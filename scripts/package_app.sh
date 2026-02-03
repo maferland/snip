@@ -78,6 +78,18 @@ fi
 
 echo "✅ Created ${APP_BUNDLE}"
 
+# Sign the app if SIGN_IDENTITY is set
+if [ -n "${SIGN_IDENTITY:-}" ]; then
+    echo "🔏 Signing app bundle..."
+    codesign --sign "${SIGN_IDENTITY}" \
+        --options runtime \
+        --timestamp \
+        --deep \
+        --force \
+        "${APP_BUNDLE}"
+    echo "✅ Signed ${APP_BUNDLE}"
+fi
+
 # Create DMG
 echo "💿 Creating DMG..."
 rm -rf /tmp/CleanCopy-dmg
@@ -93,3 +105,18 @@ hdiutil create -volname "CleanCopy ${VERSION}" \
 rm -rf /tmp/CleanCopy-dmg
 
 echo "✅ Created ${DMG_NAME}"
+
+# Notarize if credentials are set
+if [ -n "${APPLE_ID:-}" ] && [ -n "${APPLE_TEAM_ID:-}" ] && [ -n "${NOTARIZE_PASSWORD:-}" ]; then
+    echo "📤 Submitting for notarization..."
+    xcrun notarytool submit "${DMG_NAME}" \
+        --apple-id "${APPLE_ID}" \
+        --team-id "${APPLE_TEAM_ID}" \
+        --password "${NOTARIZE_PASSWORD}" \
+        --wait
+    
+    echo "📎 Stapling notarization ticket..."
+    xcrun stapler staple "${DMG_NAME}"
+    
+    echo "✅ Notarization complete"
+fi
