@@ -2,9 +2,9 @@ import AppKit
 import Combine
 
 final class ClipboardMonitor: ObservableObject {
-    @Published var isEnabled = true
     @Published var lastResult: SanitizeResult?
 
+    let settings: SettingsStore
     private let provider: ClipboardProvider
     private let sanitizer: URLSanitizer
     private let debounceInterval: TimeInterval
@@ -12,10 +12,16 @@ final class ClipboardMonitor: ObservableObject {
     private var lastChangeCount: Int = 0
     private var lastSanitizedAt: Date?
 
-    init(provider: ClipboardProvider = SystemClipboardProvider(), sanitizer: URLSanitizer = URLSanitizer(), debounceInterval: TimeInterval = 0.3) {
+    var isEnabled: Bool {
+        get { settings.isEnabled }
+        set { settings.isEnabled = newValue }
+    }
+
+    init(provider: ClipboardProvider = SystemClipboardProvider(), sanitizer: URLSanitizer = URLSanitizer(), debounceInterval: TimeInterval = 0.3, settings: SettingsStore = SettingsStore()) {
         self.provider = provider
         self.sanitizer = sanitizer
         self.debounceInterval = debounceInterval
+        self.settings = settings
     }
 
     deinit {
