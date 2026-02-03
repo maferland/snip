@@ -7,12 +7,15 @@ final class ClipboardMonitor: ObservableObject {
 
     private let provider: ClipboardProvider
     private let sanitizer: URLSanitizer
+    private let debounceInterval: TimeInterval
     private var timer: Timer?
     private var lastChangeCount: Int = 0
+    private var lastSanitizedAt: Date?
 
-    init(provider: ClipboardProvider = SystemClipboardProvider(), sanitizer: URLSanitizer = URLSanitizer()) {
+    init(provider: ClipboardProvider = SystemClipboardProvider(), sanitizer: URLSanitizer = URLSanitizer(), debounceInterval: TimeInterval = 0.3) {
         self.provider = provider
         self.sanitizer = sanitizer
+        self.debounceInterval = debounceInterval
     }
 
     deinit {
@@ -39,6 +42,11 @@ final class ClipboardMonitor: ObservableObject {
         guard currentCount != lastChangeCount else { return }
         lastChangeCount = currentCount
 
+        if let lastSanitizedAt = lastSanitizedAt,
+           Date().timeIntervalSince(lastSanitizedAt) < debounceInterval {
+            return
+        }
+
         guard let text = provider.string() else { return }
 
         let result = sanitizer.sanitize(text)
@@ -46,6 +54,7 @@ final class ClipboardMonitor: ObservableObject {
 
         provider.setString(result.cleaned)
         lastChangeCount = provider.changeCount
+        lastSanitizedAt = Date()
 
         DispatchQueue.main.async {
             self.lastResult = result
