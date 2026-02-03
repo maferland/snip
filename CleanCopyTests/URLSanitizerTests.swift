@@ -60,4 +60,25 @@ struct URLSanitizerTests {
         #expect(result.cleaned == "Check https://a.com and https://b.com")
         #expect(Set(result.removedParams) == Set(["fbclid", "gclid"]))
     }
+
+    @Test("preserves fragments and removes trackers")
+    func preservesFragment() {
+        let input = "https://example.com/page?utm_source=x#section"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://example.com/page#section")
+    }
+
+    @Test("handles percent-encoded query")
+    func handlesPercentEncoded() {
+        let input = "https://example.com/?utm_source=x&q=hello%20world"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://example.com/?q=hello%20world")
+    }
+
+    @Test("case-insensitive tracking keys")
+    func handlesCaseInsensitive() {
+        let input = "https://example.com/?UTM_Source=x"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://example.com/")
+    }
 }
