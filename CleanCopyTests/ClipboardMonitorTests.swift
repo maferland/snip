@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import CleanCopy
 
@@ -19,12 +20,17 @@ final class MockClipboardProvider: ClipboardProvider {
     }
 }
 
+func makeTestSettings() -> SettingsStore {
+    SettingsStore(userDefaults: UserDefaults(suiteName: "test-\(UUID().uuidString)")!)
+}
+
 @Suite("ClipboardMonitor")
 struct ClipboardMonitorTests {
     @Test("does not sanitize when disabled")
     func disabledDoesNotSanitize() {
         let provider = MockClipboardProvider()
-        let monitor = ClipboardMonitor(provider: provider, sanitizer: URLSanitizer())
+        let settings = makeTestSettings()
+        let monitor = ClipboardMonitor(provider: provider, sanitizer: URLSanitizer(), settings: settings)
         monitor.isEnabled = false
         provider.setString("https://example.com?utm_source=x")
         monitor.checkClipboard()
@@ -34,7 +40,8 @@ struct ClipboardMonitorTests {
     @Test("debounces rapid clipboard changes")
     func debouncesRapidChanges() {
         let provider = MockClipboardProvider()
-        let monitor = ClipboardMonitor(provider: provider, sanitizer: URLSanitizer(), debounceInterval: 0.2)
+        let settings = makeTestSettings()
+        let monitor = ClipboardMonitor(provider: provider, sanitizer: URLSanitizer(), debounceInterval: 0.2, settings: settings)
         monitor.isEnabled = true
         provider.setString("https://example.com?utm_source=1")
         monitor.checkClipboard()

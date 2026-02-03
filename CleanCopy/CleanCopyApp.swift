@@ -6,7 +6,7 @@ struct CleanCopyApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            MenuBarView(monitor: appDelegate.monitor)
+            MenuBarView(monitor: appDelegate.monitor, settings: appDelegate.monitor.settings)
         } label: {
             Image(systemName: "link")
         }

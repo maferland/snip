@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MenuBarView: View {
     @ObservedObject var monitor: ClipboardMonitor
+    @ObservedObject var settings: SettingsStore
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
     let supportURL = URL(string: "https://buymeacoffee.com/maferland")!
 
@@ -16,7 +17,7 @@ struct MenuBarView: View {
                     .font(.headline)
                 Spacer()
                 Circle()
-                    .fill(monitor.isEnabled ? .green : .gray.opacity(0.5))
+                    .fill(settings.isEnabled ? .green : .gray.opacity(0.5))
                     .frame(width: 10, height: 10)
             }
             .padding(.horizontal, 14)
@@ -43,7 +44,7 @@ struct MenuBarView: View {
             // Controls
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Toggle("", isOn: $monitor.isEnabled)
+                    Toggle("", isOn: $settings.isEnabled)
                         .toggleStyle(.switch)
                         .controlSize(.small)
                         .labelsHidden()
