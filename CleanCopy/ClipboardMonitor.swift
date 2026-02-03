@@ -5,16 +5,22 @@ final class ClipboardMonitor: ObservableObject {
     @Published var isEnabled = true
     @Published var lastResult: SanitizeResult?
 
-    private let sanitizer = URLSanitizer()
+    private let provider: ClipboardProvider
+    private let sanitizer: URLSanitizer
     private var timer: Timer?
     private var lastChangeCount: Int = 0
+
+    init(provider: ClipboardProvider = SystemClipboardProvider(), sanitizer: URLSanitizer = URLSanitizer()) {
+        self.provider = provider
+        self.sanitizer = sanitizer
+    }
 
     deinit {
         stop()
     }
 
     func start() {
-        lastChangeCount = NSPasteboard.general.changeCount
+        lastChangeCount = provider.changeCount
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.checkClipboard()
         }
@@ -25,26 +31,22 @@ final class ClipboardMonitor: ObservableObject {
         timer = nil
     }
 
-    private func checkClipboard() {
+    func checkClipboard() {
         guard isEnabled else { return }
 
-        let pasteboard = NSPasteboard.general
-        let currentCount = pasteboard.changeCount
+        let currentCount = provider.changeCount
 
         guard currentCount != lastChangeCount else { return }
         lastChangeCount = currentCount
 
-        guard let text = pasteboard.string(forType: .string) else { return }
+        guard let text = provider.string() else { return }
 
         let result = sanitizer.sanitize(text)
         guard result.didChange else { return }
 
-        // Update clipboard with cleaned text
-        pasteboard.clearContents()
-        pasteboard.setString(result.cleaned, forType: .string)
-        lastChangeCount = pasteboard.changeCount
+        provider.setString(result.cleaned)
+        lastChangeCount = provider.changeCount
 
-        // Publish result for notification
         DispatchQueue.main.async {
             self.lastResult = result
         }
