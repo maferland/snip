@@ -1,4 +1,4 @@
-# Contributing to CleanCopy
+# Contributing to Snip
 
 Thanks for your interest in contributing.
 
@@ -13,7 +13,7 @@ swift test
 
 ## Adding Tracking Parameters
 
-Edit `CleanCopy/TrackingParams.swift` and add the parameter name (lowercase) to the blocklist. Include a comment noting the source.
+Edit `Snip/TrackingParams.swift` and add the parameter name (lowercase) to the blocklist. Include a comment noting the source.
 
 Run tests to verify:
 ```bash

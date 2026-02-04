@@ -3,11 +3,11 @@ set -euo pipefail
 
 VERSION="${1:-v0.0.0}"
 BUILD_DIR=".build/release"
-APP_NAME="CleanCopy"
+APP_NAME="Snip"
 APP_BUNDLE="${APP_NAME}.app"
 DMG_NAME="${APP_NAME}-${VERSION}-macos.dmg"
 
-BUNDLE_ID="com.maferland.CleanCopy"
+BUNDLE_ID="com.maferland.snip"
 EXECUTABLE="${BUILD_DIR}/${APP_NAME}"
 
 echo "📦 Packaging ${APP_NAME} ${VERSION}..."
@@ -92,17 +92,17 @@ fi
 
 # Create DMG
 echo "💿 Creating DMG..."
-rm -rf /tmp/CleanCopy-dmg
-mkdir -p /tmp/CleanCopy-dmg
-cp -R "${APP_BUNDLE}" /tmp/CleanCopy-dmg/
-ln -s /Applications /tmp/CleanCopy-dmg/Applications
+rm -rf /tmp/Snip-dmg
+mkdir -p /tmp/Snip-dmg
+cp -R "${APP_BUNDLE}" /tmp/Snip-dmg/
+ln -s /Applications /tmp/Snip-dmg/Applications
 
-hdiutil create -volname "CleanCopy ${VERSION}" \
-    -srcfolder /tmp/CleanCopy-dmg \
+hdiutil create -volname "Snip ${VERSION}" \
+    -srcfolder /tmp/Snip-dmg \
     -ov -format UDZO \
     "${DMG_NAME}"
 
-rm -rf /tmp/CleanCopy-dmg
+rm -rf /tmp/Snip-dmg
 
 echo "✅ Created ${DMG_NAME}"
 

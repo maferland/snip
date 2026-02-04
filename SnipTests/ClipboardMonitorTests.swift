@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import CleanCopy
+@testable import Snip
 
 final class MockClipboardProvider: ClipboardProvider {
     private var _changeCount = 0

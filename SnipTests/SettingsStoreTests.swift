@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import CleanCopy
+@testable import Snip
 
 @Suite("SettingsStore")
 struct SettingsStoreTests {
