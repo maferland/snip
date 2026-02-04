@@ -75,25 +75,6 @@ If Snip saves you from tracking junk, consider buying me a coffee:
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://buymeacoffee.com/maferland)
 
-## Releasing
-
-Releases are automated via GitHub Actions. To release:
-
-```bash
-git tag v2.0.0
-git push origin v2.0.0
-```
-
-**Required GitHub Secrets:**
-| Secret | Description |
-|--------|-------------|
-| `APPLE_DEVELOPER_CERTIFICATE_P12_BASE64` | Base64-encoded .p12 signing certificate |
-| `APPLE_DEVELOPER_CERTIFICATE_PASSWORD` | Password for the .p12 file |
-| `APPLE_SIGN_IDENTITY` | e.g., `Developer ID Application: Your Name (TEAMID)` |
-| `APPLE_ID` | Your Apple ID email |
-| `APPLE_TEAM_ID` | Your 10-character Team ID |
-| `NOTARIZE_PASSWORD` | App-specific password from appleid.apple.com |
-
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
