@@ -1,5 +1,5 @@
 import Testing
-@testable import CleanCopy
+@testable import Snip
 
 @Suite("TrackingParams")
 struct TrackingParamsTests {

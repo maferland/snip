@@ -1,14 +1,14 @@
 import SwiftUI
 
 @main
-struct CleanCopyApp: App {
+struct SnipApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
         MenuBarExtra {
             MenuBarView(monitor: appDelegate.monitor, settings: appDelegate.monitor.settings)
         } label: {
-            Image(systemName: "link")
+            Image(systemName: "scissors")
         }
         .menuBarExtraStyle(.window)
         .onChange(of: appDelegate.monitor.lastResult) { _, result in

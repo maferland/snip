@@ -1,7 +1,7 @@
-# CleanCopy
+# Snip
 
 <p align="center">
-  <img src="assets/icon.png" width="128" height="128" alt="CleanCopy Icon">
+  <img src="assets/icon.png" width="128" height="128" alt="Snip Icon">
 </p>
 
 > Automatically strip tracking junk from URLs when you copy them.
@@ -16,7 +16,7 @@ No action needed. Just copy links like normal.
 
 Every link you share is full of tracking garbage. `utm_source`, `fbclid`, `gclid` — they let companies track where you came from and follow you around the web.
 
-CleanCopy removes them automatically. Copy a link, share a clean link.
+Snip removes them automatically. Copy a link, share a clean link.
 
 ## Install
 
@@ -26,7 +26,7 @@ brew tap maferland/tap
 brew install --cask cleancopy
 ```
 
-**Manual**: Download DMG from [Releases](https://github.com/maferland/clean-copy/releases), open it, drag `CleanCopy.app` to Applications.
+**Manual**: Download DMG from [Releases](https://github.com/maferland/clean-copy/releases), open it, drag `Snip.app` to Applications.
 
 **Build from source**:
 ```bash
@@ -37,7 +37,7 @@ make install
 
 ## Usage
 
-Run `CleanCopy`. A link icon appears in your menu bar. That's it.
+Run `Snip`. A link icon appears in your menu bar. That's it.
 
 - **Enabled/Disabled** — Toggle cleaning on/off
 - **Start at Login** — Run automatically when you log in
@@ -58,11 +58,11 @@ Run `CleanCopy`. A link icon appears in your menu bar. That's it.
 | `_hsenc`, `_hsmi` | HubSpot |
 | `ref`, `ref_src` | Generic referral |
 
-[Full list in source](CleanCopy/TrackingParams.swift)
+[Full list in source](Snip/TrackingParams.swift)
 
 ## Privacy
 
-CleanCopy runs entirely on your Mac. No network requests. No data collection. No analytics (ironic, right?).
+Snip runs entirely on your Mac. No network requests. No data collection. No analytics (ironic, right?).
 
 ## Requirements
 
@@ -71,7 +71,7 @@ CleanCopy runs entirely on your Mac. No network requests. No data collection. No
 
 ## Support
 
-If CleanCopy saves you from tracking junk, consider buying me a coffee:
+If Snip saves you from tracking junk, consider buying me a coffee:
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://buymeacoffee.com/maferland)
 

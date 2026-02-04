@@ -2,17 +2,17 @@
 import PackageDescription
 
 let package = Package(
-    name: "CleanCopy",
+    name: "Snip",
     platforms: [.macOS(.v14)],
     targets: [
         .executableTarget(
-            name: "CleanCopy",
-            path: "CleanCopy"
+            name: "Snip",
+            path: "Snip"
         ),
         .testTarget(
-            name: "CleanCopyTests",
-            dependencies: ["CleanCopy"],
-            path: "CleanCopyTests"
+            name: "SnipTests",
+            dependencies: ["Snip"],
+            path: "SnipTests"
         )
     ]
 )

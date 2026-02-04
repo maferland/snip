@@ -10,10 +10,10 @@ struct MenuBarView: View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Image(systemName: "link")
+                Image(systemName: "scissors")
                     .font(.title2)
-                    .foregroundStyle(.blue)
-                Text("CleanCopy")
+                    .foregroundStyle(.primary)
+                Text("Snip")
                     .font(.headline)
                 Spacer()
                 Circle()
