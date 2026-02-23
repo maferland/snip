@@ -27,12 +27,19 @@ final class URLSanitizer {
                 continue
             }
 
+            let host = components.host?.lowercased()
+            let domainParams = host.flatMap { TrackingParams.domainScoped[$0] } ?? []
+
             let originalItems = components.queryItems ?? []
             let filteredItems = originalItems.filter { item in
-                !TrackingParams.blocklist.contains(item.name.lowercased())
+                let key = item.name.lowercased()
+                return !TrackingParams.blocklist.contains(key) && !domainParams.contains(key)
             }
 
-            let removed = originalItems.filter { TrackingParams.blocklist.contains($0.name.lowercased()) }.map(\.name)
+            let removed = originalItems.filter {
+                let key = $0.name.lowercased()
+                return TrackingParams.blocklist.contains(key) || domainParams.contains(key)
+            }.map(\.name)
             removedParams.append(contentsOf: removed)
 
             if removed.isEmpty { continue }

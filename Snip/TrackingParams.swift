@@ -30,4 +30,9 @@ enum TrackingParams {
         "s_kwcid",
         "igshid",
     ]
+
+    static let domainScoped: [String: Set<String>] = [
+        "x.com": ["s", "t"],
+        "twitter.com": ["s", "t"],
+    ]
 }
