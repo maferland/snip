@@ -1,22 +1,24 @@
-# Snip
+<div align="center">
+<h1>✂️ Snip</h1>
 
-<p align="center">
-  <img src="assets/icon.png" width="128" height="128" alt="Snip Icon">
-</p>
+<img src="assets/icon.png" width="128" height="128" alt="Snip Icon">
 
-> Automatically strip tracking junk from URLs when you copy them.
+<p>Automatically strip tracking junk from URLs when you copy them</p>
+</div>
 
-You copy `https://example.com/article?utm_source=twitter&utm_medium=social&fbclid=abc123`
-
-Your clipboard gets `https://example.com/article`
-
-No action needed. Just copy links like normal.
+---
 
 ## Why?
 
 Every link you share is full of tracking garbage. `utm_source`, `fbclid`, `gclid` — they let companies track where you came from and follow you around the web.
 
 Snip removes them automatically. Copy a link, share a clean link.
+
+You copy `https://example.com/article?utm_source=twitter&utm_medium=social&fbclid=abc123`
+
+Your clipboard gets `https://example.com/article`
+
+No action needed. Just copy links like normal.
 
 ## Install
 
