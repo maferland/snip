@@ -30,4 +30,22 @@ struct TrackingParamsTests {
         let array = Array(TrackingParams.blocklist)
         #expect(array.count == Set(array).count, "Blocklist contains duplicates")
     }
+
+    @Test("domain-scoped keys and values are lowercase")
+    func domainScopedIsLowercase() {
+        for (domain, params) in TrackingParams.domainScoped {
+            #expect(domain == domain.lowercased(), "Domain '\(domain)' should be lowercase")
+            for param in params {
+                #expect(param == param.lowercased(), "Param '\(param)' for \(domain) should be lowercase")
+            }
+        }
+    }
+
+    @Test("domain-scoped params don't overlap global blocklist")
+    func domainScopedNoOverlapWithGlobal() {
+        for (domain, params) in TrackingParams.domainScoped {
+            let overlap = params.intersection(TrackingParams.blocklist)
+            #expect(overlap.isEmpty, "Domain '\(domain)' has params \(overlap) already in global blocklist")
+        }
+    }
 }

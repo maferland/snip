@@ -103,4 +103,36 @@ struct URLSanitizerTests {
         #expect(result.cleaned == "https://example.com/search?q=test&page=2")
         #expect(Set(result.removedParams) == Set(["utm_source", "fbclid"]))
     }
+
+    @Test("strips domain-scoped params from x.com")
+    func stripsDomainParamsXCom() {
+        let input = "https://x.com/claudeai/status/123?s=46&t=KXPbHPPrKUEWvS_-L9Mbdg"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://x.com/claudeai/status/123")
+        #expect(Set(result.removedParams) == Set(["s", "t"]))
+    }
+
+    @Test("strips domain-scoped params from twitter.com")
+    func stripsDomainParamsTwitter() {
+        let input = "https://twitter.com/user/status/456?s=20&t=abc"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://twitter.com/user/status/456")
+        #expect(Set(result.removedParams) == Set(["s", "t"]))
+    }
+
+    @Test("preserves s and t on non-Twitter domains")
+    func preservesDomainParamsElsewhere() {
+        let input = "https://example.com/?s=query&t=value"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://example.com/?s=query&t=value")
+        #expect(result.removedParams.isEmpty)
+    }
+
+    @Test("strips both global and domain-scoped params on x.com")
+    func stripsMixedGlobalAndDomainParams() {
+        let input = "https://x.com/user/status/789?utm_source=share&s=46&t=xyz"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://x.com/user/status/789")
+        #expect(Set(result.removedParams) == Set(["utm_source", "s", "t"]))
+    }
 }

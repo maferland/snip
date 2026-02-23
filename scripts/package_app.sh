@@ -86,6 +86,7 @@ if [ -n "${SIGN_IDENTITY:-}" ]; then
         --timestamp \
         --deep \
         --force \
+        --entitlements "Snip.entitlements" \
         "${APP_BUNDLE}"
     echo "✅ Signed ${APP_BUNDLE}"
 fi
