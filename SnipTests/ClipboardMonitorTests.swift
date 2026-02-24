@@ -24,13 +24,25 @@ func makeTestSettings() -> SettingsStore {
     SettingsStore(userDefaults: UserDefaults(suiteName: "test-\(UUID().uuidString)")!)
 }
 
+func makeTestTrackingStore() -> TrackingParamsStore {
+    let url = FileManager.default.temporaryDirectory
+        .appendingPathComponent("snip-test-\(UUID().uuidString)")
+        .appendingPathComponent("tracking_params.json")
+    return TrackingParamsStore(url: url)
+}
+
 @Suite("ClipboardMonitor")
 struct ClipboardMonitorTests {
     @Test("does not sanitize when disabled")
     func disabledDoesNotSanitize() {
         let provider = MockClipboardProvider()
         let settings = makeTestSettings()
-        let monitor = ClipboardMonitor(provider: provider, sanitizer: URLSanitizer(), settings: settings)
+        let monitor = ClipboardMonitor(
+            provider: provider,
+            sanitizer: URLSanitizer(),
+            settings: settings,
+            trackingStore: makeTestTrackingStore()
+        )
         monitor.isEnabled = false
         provider.setString("https://example.com?utm_source=x")
         monitor.checkClipboard()
@@ -41,7 +53,13 @@ struct ClipboardMonitorTests {
     func debouncesRapidChanges() {
         let provider = MockClipboardProvider()
         let settings = makeTestSettings()
-        let monitor = ClipboardMonitor(provider: provider, sanitizer: URLSanitizer(), debounceInterval: 0.2, settings: settings)
+        let monitor = ClipboardMonitor(
+            provider: provider,
+            sanitizer: URLSanitizer(),
+            debounceInterval: 0.2,
+            settings: settings,
+            trackingStore: makeTestTrackingStore()
+        )
         monitor.isEnabled = true
         provider.setString("https://example.com?utm_source=1")
         monitor.checkClipboard()

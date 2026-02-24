@@ -135,4 +135,41 @@ struct URLSanitizerTests {
         #expect(result.cleaned == "https://x.com/user/status/789")
         #expect(Set(result.removedParams) == Set(["utm_source", "s", "t"]))
     }
+
+    @Test("strips domain-scoped params with www. prefix")
+    func stripsDomainParamsWithWww() {
+        let input = "https://www.x.com/user/status/123?s=20&t=abc"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.x.com/user/status/123")
+        #expect(Set(result.removedParams) == Set(["s", "t"]))
+    }
+
+    @Test("strips Amazon tracking params from amazon.ca")
+    func stripsAmazonCa() {
+        let input = "https://www.amazon.ca/Product/dp/123?_encoding=UTF8&pd_rd_w=rTtCm&content-id=amzn1.sym.abc&pf_rd_p=abc&pf_rd_r=XYZ&pd_rd_wg=xkSVl&pd_rd_r=f022b&th=1&psc=1"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.amazon.ca/Product/dp/123")
+        #expect(Set(result.removedParams) == Set(["_encoding", "pd_rd_w", "content-id", "pf_rd_p", "pf_rd_r", "pd_rd_wg", "pd_rd_r", "th", "psc"]))
+    }
+
+    @Test("strips Amazon tracking params from amazon.com")
+    func stripsAmazonCom() {
+        let input = "https://www.amazon.com/dp/456?pd_rd_w=abc&ref=sr_1_1"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.amazon.com/dp/456")
+        #expect(Set(result.removedParams) == Set(["pd_rd_w", "ref"]))
+    }
+
+    @Test("uses custom config when provided")
+    func usesCustomConfig() {
+        let custom = TrackingParamsConfig(
+            global: ["custom_tracker"],
+            domainScoped: [:],
+            domainPrefixScoped: [:]
+        )
+        let input = "https://example.com/?custom_tracker=1&utm_source=x"
+        let result = sanitizer.sanitize(input, config: custom)
+        #expect(result.cleaned == "https://example.com/?utm_source=x")
+        #expect(result.removedParams == ["custom_tracker"])
+    }
 }

@@ -4,6 +4,7 @@ struct MenuBarView: View {
     @ObservedObject var monitor: ClipboardMonitor
     @ObservedObject var settings: SettingsStore
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
+    var onEditRules: () -> Void
     let supportURL = URL(string: "https://buymeacoffee.com/maferland")!
 
     private var appVersion: String {
@@ -87,12 +88,22 @@ struct MenuBarView: View {
             // Actions
             VStack(spacing: 0) {
                 Button {
+                    onEditRules()
+                } label: {
+                    HStack {
+                        Label("Edit Rules", systemImage: "slider.horizontal.3")
+                        Spacer()
+                    }
+                }
+                .buttonStyle(MenuButtonStyle())
+
+                Button {
                     NSWorkspace.shared.open(supportURL)
                 } label: {
                     HStack {
                         Label("Support", systemImage: "heart")
                         Spacer()
-                        Text("☕")
+                        Text("\u{2615}")
                     }
                 }
                 .buttonStyle(MenuButtonStyle())
@@ -103,7 +114,7 @@ struct MenuBarView: View {
                     HStack {
                         Label("Quit", systemImage: "xmark.circle")
                         Spacer()
-                        Text("⌘Q")
+                        Text("\u{2318}Q")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

@@ -5,6 +5,7 @@ final class ClipboardMonitor: ObservableObject {
     @Published var lastResult: SanitizeResult?
 
     let settings: SettingsStore
+    let trackingStore: TrackingParamsStore
     private let provider: ClipboardProvider
     private let sanitizer: URLSanitizer
     private let debounceInterval: TimeInterval
@@ -17,11 +18,18 @@ final class ClipboardMonitor: ObservableObject {
         set { settings.isEnabled = newValue }
     }
 
-    init(provider: ClipboardProvider = SystemClipboardProvider(), sanitizer: URLSanitizer = URLSanitizer(), debounceInterval: TimeInterval = 0.3, settings: SettingsStore = SettingsStore()) {
+    init(
+        provider: ClipboardProvider = SystemClipboardProvider(),
+        sanitizer: URLSanitizer = URLSanitizer(),
+        debounceInterval: TimeInterval = 0.3,
+        settings: SettingsStore = SettingsStore(),
+        trackingStore: TrackingParamsStore = TrackingParamsStore()
+    ) {
         self.provider = provider
         self.sanitizer = sanitizer
         self.debounceInterval = debounceInterval
         self.settings = settings
+        self.trackingStore = trackingStore
     }
 
     deinit {
@@ -55,7 +63,7 @@ final class ClipboardMonitor: ObservableObject {
 
         guard let text = provider.string() else { return }
 
-        let result = sanitizer.sanitize(text)
+        let result = sanitizer.sanitize(text, config: trackingStore.config)
         guard result.didChange else { return }
 
         provider.setString(result.cleaned)
