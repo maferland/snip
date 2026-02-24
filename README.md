@@ -25,15 +25,15 @@ No action needed. Just copy links like normal.
 **Homebrew** (recommended):
 ```bash
 brew tap maferland/tap
-brew install --cask cleancopy
+brew install --cask snip
 ```
 
-**Manual**: Download DMG from [Releases](https://github.com/maferland/clean-copy/releases), open it, drag `Snip.app` to Applications.
+**Manual**: Download DMG from [Releases](https://github.com/maferland/snip/releases), open it, drag `Snip.app` to Applications.
 
 **Build from source**:
 ```bash
-git clone https://github.com/maferland/clean-copy.git
-cd clean-copy
+git clone https://github.com/maferland/snip.git
+cd snip
 make install
 ```
 
@@ -59,6 +59,7 @@ Run `Snip`. A link icon appears in your menu bar. That's it.
 | `mc_eid`, `mc_cid` | Mailchimp |
 | `_hsenc`, `_hsmi` | HubSpot |
 | `ref`, `ref_src` | Generic referral |
+| `s`, `t` | X/Twitter (domain-scoped) |
 
 [Full list in source](Snip/TrackingParams.swift)
 
