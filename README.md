@@ -4,11 +4,13 @@
 <img src="assets/icon.png" width="128" height="128" alt="Snip Icon">
 
 <p>Automatically strip tracking junk from URLs when you copy them</p>
-
-<img src="assets/popover.png" width="220" alt="Snip menu bar popover">
 </div>
 
 ---
+
+<p align="center">
+  <img src="assets/popover.png" width="220" alt="Snip menu bar popover">
+</p>
 
 ## Why?
 
