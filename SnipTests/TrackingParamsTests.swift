@@ -1,39 +1,41 @@
+import Foundation
 import Testing
 @testable import Snip
 
-@Suite("TrackingParams")
-struct TrackingParamsTests {
+@Suite("TrackingParamsConfig")
+struct TrackingParamsConfigTests {
+    let config = TrackingParamsConfig.defaults
+
     @Test("contains common tracking params")
     func containsCommonParams() {
-        #expect(TrackingParams.blocklist.contains("utm_source"))
-        #expect(TrackingParams.blocklist.contains("fbclid"))
-        #expect(TrackingParams.blocklist.contains("gclid"))
-        #expect(TrackingParams.blocklist.contains("si"))
+        #expect(config.global.contains("utm_source"))
+        #expect(config.global.contains("fbclid"))
+        #expect(config.global.contains("gclid"))
+        #expect(config.global.contains("si"))
     }
 
     @Test("does not contain legitimate params")
     func doesNotContainLegitParams() {
-        #expect(!TrackingParams.blocklist.contains("id"))
-        #expect(!TrackingParams.blocklist.contains("page"))
-        #expect(!TrackingParams.blocklist.contains("q"))
+        #expect(!config.global.contains("id"))
+        #expect(!config.global.contains("page"))
+        #expect(!config.global.contains("q"))
     }
 
-    @Test("blocklist contains only lowercase keys")
-    func blocklistIsLowercase() {
-        for param in TrackingParams.blocklist {
+    @Test("global contains only lowercase keys")
+    func globalIsLowercase() {
+        for param in config.global {
             #expect(param == param.lowercased(), "Param '\(param)' should be lowercase")
         }
     }
 
-    @Test("blocklist has no duplicates")
-    func blocklistHasNoDuplicates() {
-        let array = Array(TrackingParams.blocklist)
-        #expect(array.count == Set(array).count, "Blocklist contains duplicates")
+    @Test("global has no duplicates")
+    func globalHasNoDuplicates() {
+        #expect(config.global.count == Set(config.global).count, "Global list contains duplicates")
     }
 
     @Test("domain-scoped keys and values are lowercase")
     func domainScopedIsLowercase() {
-        for (domain, params) in TrackingParams.domainScoped {
+        for (domain, params) in config.domainScoped {
             #expect(domain == domain.lowercased(), "Domain '\(domain)' should be lowercase")
             for param in params {
                 #expect(param == param.lowercased(), "Param '\(param)' for \(domain) should be lowercase")
@@ -41,11 +43,40 @@ struct TrackingParamsTests {
         }
     }
 
-    @Test("domain-scoped params don't overlap global blocklist")
+    @Test("domain-scoped params don't overlap global")
     func domainScopedNoOverlapWithGlobal() {
-        for (domain, params) in TrackingParams.domainScoped {
-            let overlap = params.intersection(TrackingParams.blocklist)
-            #expect(overlap.isEmpty, "Domain '\(domain)' has params \(overlap) already in global blocklist")
+        let globalSet = Set(config.global)
+        for (domain, params) in config.domainScoped {
+            let overlap = Set(params).intersection(globalSet)
+            #expect(overlap.isEmpty, "Domain '\(domain)' has params \(overlap) already in global")
         }
+    }
+
+    @Test("domain-prefix-scoped keys and values are lowercase")
+    func domainPrefixScopedIsLowercase() {
+        for (prefix, params) in config.domainPrefixScoped {
+            #expect(prefix == prefix.lowercased(), "Prefix '\(prefix)' should be lowercase")
+            for param in params {
+                #expect(param == param.lowercased(), "Param '\(param)' for \(prefix) should be lowercase")
+            }
+        }
+    }
+
+    @Test("domain-prefix-scoped params don't overlap global")
+    func domainPrefixScopedNoOverlapWithGlobal() {
+        let globalSet = Set(config.global)
+        for (prefix, params) in config.domainPrefixScoped {
+            let overlap = Set(params).intersection(globalSet)
+            #expect(overlap.isEmpty, "Prefix '\(prefix)' has params \(overlap) already in global")
+        }
+    }
+
+    @Test("encodes and decodes to JSON roundtrip")
+    func jsonRoundtrip() throws {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        let data = try encoder.encode(config)
+        let decoded = try JSONDecoder().decode(TrackingParamsConfig.self, from: data)
+        #expect(decoded == config)
     }
 }

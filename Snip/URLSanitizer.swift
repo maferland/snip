@@ -8,18 +8,17 @@ struct SanitizeResult: Equatable {
 }
 
 final class URLSanitizer {
-    func sanitize(_ text: String) -> SanitizeResult {
+    func sanitize(_ text: String, config: TrackingParamsConfig = .defaults) -> SanitizeResult {
         var removedParams: [String] = []
         var result = text
 
-        // Find all URLs in text
         guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
             return SanitizeResult(cleaned: text, removedParams: [])
         }
 
         let matches = detector.matches(in: text, range: NSRange(text.startIndex..., in: text))
+        let globalBlocklist = Set(config.global)
 
-        // Process in reverse to preserve string indices
         for match in matches.reversed() {
             guard let range = Range(match.range, in: text),
                   let url = match.url,
@@ -28,17 +27,18 @@ final class URLSanitizer {
             }
 
             let host = components.host?.lowercased()
-            let domainParams = host.flatMap { TrackingParams.domainScoped[$0] } ?? []
+                .replacingOccurrences(of: "www.", with: "")
+            let domainParams = domainParamsFor(host: host ?? "", config: config)
 
             let originalItems = components.queryItems ?? []
             let filteredItems = originalItems.filter { item in
                 let key = item.name.lowercased()
-                return !TrackingParams.blocklist.contains(key) && !domainParams.contains(key)
+                return !globalBlocklist.contains(key) && !domainParams.contains(key)
             }
 
             let removed = originalItems.filter {
                 let key = $0.name.lowercased()
-                return TrackingParams.blocklist.contains(key) || domainParams.contains(key)
+                return globalBlocklist.contains(key) || domainParams.contains(key)
             }.map(\.name)
             removedParams.append(contentsOf: removed)
 
@@ -52,5 +52,15 @@ final class URLSanitizer {
         }
 
         return SanitizeResult(cleaned: result, removedParams: removedParams)
+    }
+
+    private func domainParamsFor(host: String, config: TrackingParamsConfig) -> Set<String> {
+        var params = Set(config.domainScoped[host] ?? [])
+        for (prefix, prefixParams) in config.domainPrefixScoped {
+            if host.hasPrefix(prefix + ".") {
+                params.formUnion(prefixParams)
+            }
+        }
+        return params
     }
 }

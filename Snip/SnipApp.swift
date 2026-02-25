@@ -6,7 +6,11 @@ struct SnipApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            MenuBarView(monitor: appDelegate.monitor, settings: appDelegate.monitor.settings)
+            MenuBarView(
+                monitor: appDelegate.monitor,
+                settings: appDelegate.monitor.settings,
+                onEditRules: { appDelegate.rulesEditor.show(store: appDelegate.monitor.trackingStore) }
+            )
         } label: {
             Image(systemName: "scissors")
         }
@@ -21,6 +25,7 @@ struct SnipApp: App {
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     let monitor = ClipboardMonitor()
+    let rulesEditor = RulesEditorWindowController()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
