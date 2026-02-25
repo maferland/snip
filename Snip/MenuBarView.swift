@@ -6,6 +6,11 @@ struct MenuBarView: View {
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
     let supportURL = URL(string: "https://buymeacoffee.com/maferland")!
 
+    private var appVersion: String {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
+        return version.hasPrefix("v") ? version : "v\(version)"
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             // Header
@@ -15,6 +20,9 @@ struct MenuBarView: View {
                     .foregroundStyle(.primary)
                 Text("Snip")
                     .font(.headline)
+                Text(appVersion)
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
                 Spacer()
                 Circle()
                     .fill(settings.isEnabled ? .green : .gray.opacity(0.5))
