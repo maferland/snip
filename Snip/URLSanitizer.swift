@@ -8,13 +8,19 @@ struct SanitizeResult: Equatable {
 }
 
 final class URLSanitizer {
-    func sanitize(_ text: String, config: TrackingParamsConfig = .defaults) -> SanitizeResult {
-        var removedParams: [String] = []
-        var result = text
+    private let detector: NSDataDetector?
 
-        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
+    init() {
+        self.detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+    }
+
+    func sanitize(_ text: String, config: TrackingParamsConfig = .defaults) -> SanitizeResult {
+        guard let detector else {
             return SanitizeResult(cleaned: text, removedParams: [])
         }
+
+        var removedParams: [String] = []
+        var result = text
 
         let matches = detector.matches(in: text, range: NSRange(text.startIndex..., in: text))
         let globalBlocklist = Set(config.global)

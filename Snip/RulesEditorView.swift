@@ -3,41 +3,47 @@ import AppKit
 
 struct RulesEditorView: View {
     @ObservedObject var store: TrackingParamsStore
-    @State private var config: TrackingParamsConfig = .defaults
+    @State private var model: RulesEditorModel?
     @State private var newGlobalParam = ""
     @State private var newDomainName = ""
     @State private var newDomainParam: [String: String] = [:]
     @State private var newPrefixName = ""
     @State private var newPrefixParam: [String: String] = [:]
-    @State private var saved = false
-    @State private var errorMessage: String?
-
-    private var hasChanges: Bool { config != store.config }
 
     var body: some View {
+        if let model {
+            content(model)
+        } else {
+            Color.clear.onAppear { model = RulesEditorModel(store: store) }
+        }
+    }
+
+    private func content(_ model: RulesEditorModel) -> some View {
         VStack(spacing: 0) {
             Form {
-                globalSection
-                domainScopedSection
-                domainPrefixSection
+                globalSection(model)
+                domainScopedSection(model)
+                domainPrefixSection(model)
             }
             .formStyle(.grouped)
 
             Divider()
-            statusBar
+            statusBar(model)
         }
         .frame(minWidth: 480, minHeight: 500)
-        .onAppear { config = store.config }
     }
 
     // MARK: - Global
 
-    private var globalSection: some View {
+    private func globalSection(_ model: RulesEditorModel) -> some View {
         Section {
-            ForEach(config.global, id: \.self) { param in
-                paramRow(param) { removeGlobal(param) }
+            ForEach(model.config.global, id: \.self) { param in
+                paramRow(param) { model.removeGlobal(param) }
             }
-            addField(text: $newGlobalParam, placeholder: "e.g. tracking_id", action: addGlobal)
+            addField(text: $newGlobalParam, placeholder: "e.g. tracking_id") {
+                model.addGlobal(newGlobalParam)
+                newGlobalParam = ""
+            }
         } header: {
             Label("Always Remove", systemImage: "globe")
         } footer: {
@@ -45,38 +51,31 @@ struct RulesEditorView: View {
         }
     }
 
-    private func addGlobal() {
-        let param = newGlobalParam.trimmedLowercased
-        guard !param.isEmpty, !config.global.contains(param) else { return }
-        config.global.append(param)
-        newGlobalParam = ""
-        saved = false
-    }
-
-    private func removeGlobal(_ param: String) {
-        config.global.removeAll { $0 == param }
-        saved = false
-    }
-
     // MARK: - Domain-Scoped
 
-    private var domainScopedSection: some View {
+    private func domainScopedSection(_ model: RulesEditorModel) -> some View {
         Section {
-            ForEach(config.domainScoped.keys.sorted(), id: \.self) { domain in
+            ForEach(model.config.domainScoped.keys.sorted(), id: \.self) { domain in
                 DisclosureGroup {
-                    ForEach(config.domainScoped[domain] ?? [], id: \.self) { param in
-                        paramRow(param) { removeDomainParam(domain: domain, param: param) }
+                    ForEach(model.config.domainScoped[domain] ?? [], id: \.self) { param in
+                        paramRow(param) { model.removeDomainParam(domain: domain, param: param) }
                     }
                     addField(
                         text: dictBinding(for: domain, in: $newDomainParam),
-                        placeholder: "e.g. tracker",
-                        action: { addDomainParam(domain: domain) }
-                    )
+                        placeholder: "e.g. tracker"
+                    ) {
+                        let text = newDomainParam[domain] ?? ""
+                        model.addDomainParam(domain: domain, param: text)
+                        newDomainParam[domain] = ""
+                    }
                 } label: {
-                    domainLabel(domain) { removeDomain(domain) }
+                    domainLabel(domain) { model.removeDomain(domain) }
                 }
             }
-            addField(text: $newDomainName, placeholder: "e.g. reddit.com", action: addDomain)
+            addField(text: $newDomainName, placeholder: "e.g. reddit.com") {
+                model.addDomain(newDomainName)
+                newDomainName = ""
+            }
         } header: {
             Label("Domain-Specific", systemImage: "network")
         } footer: {
@@ -84,50 +83,23 @@ struct RulesEditorView: View {
         }
     }
 
-    private func addDomain() {
-        let domain = newDomainName.trimmedLowercased
-        guard !domain.isEmpty, config.domainScoped[domain] == nil else { return }
-        config.domainScoped[domain] = []
-        newDomainName = ""
-        saved = false
-    }
-
-    private func removeDomain(_ domain: String) {
-        config.domainScoped.removeValue(forKey: domain)
-        newDomainParam.removeValue(forKey: domain)
-        saved = false
-    }
-
-    private func addDomainParam(domain: String) {
-        let param = (newDomainParam[domain] ?? "").trimmedLowercased
-        guard !param.isEmpty, !(config.domainScoped[domain]?.contains(param) ?? false) else { return }
-        config.domainScoped[domain, default: []].append(param)
-        newDomainParam[domain] = ""
-        saved = false
-    }
-
-    private func removeDomainParam(domain: String, param: String) {
-        config.domainScoped[domain]?.removeAll { $0 == param }
-        if config.domainScoped[domain]?.isEmpty == true {
-            config.domainScoped.removeValue(forKey: domain)
-        }
-        saved = false
-    }
-
     // MARK: - Domain Prefix
 
-    private var domainPrefixSection: some View {
+    private func domainPrefixSection(_ model: RulesEditorModel) -> some View {
         Section {
-            ForEach(config.domainPrefixScoped.keys.sorted(), id: \.self) { prefix in
+            ForEach(model.config.domainPrefixScoped.keys.sorted(), id: \.self) { prefix in
                 DisclosureGroup {
-                    ForEach(config.domainPrefixScoped[prefix] ?? [], id: \.self) { param in
-                        paramRow(param) { removePrefixParam(prefix: prefix, param: param) }
+                    ForEach(model.config.domainPrefixScoped[prefix] ?? [], id: \.self) { param in
+                        paramRow(param) { model.removePrefixParam(prefix: prefix, param: param) }
                     }
                     addField(
                         text: dictBinding(for: prefix, in: $newPrefixParam),
-                        placeholder: "e.g. tracker",
-                        action: { addPrefixParam(prefix: prefix) }
-                    )
+                        placeholder: "e.g. tracker"
+                    ) {
+                        let text = newPrefixParam[prefix] ?? ""
+                        model.addPrefixParam(prefix: prefix, param: text)
+                        newPrefixParam[prefix] = ""
+                    }
                 } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
@@ -137,7 +109,7 @@ struct RulesEditorView: View {
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
-                        Button { removePrefix(prefix) } label: {
+                        Button { model.removePrefix(prefix) } label: {
                             Image(systemName: "trash")
                                 .font(.caption)
                                 .foregroundStyle(.red.opacity(0.5))
@@ -146,42 +118,15 @@ struct RulesEditorView: View {
                     }
                 }
             }
-            addField(text: $newPrefixName, placeholder: "e.g. ebay", action: addPrefix)
+            addField(text: $newPrefixName, placeholder: "e.g. ebay") {
+                model.addPrefix(newPrefixName)
+                newPrefixName = ""
+            }
         } header: {
             Label("Domain Family", systemImage: "rectangle.stack")
         } footer: {
             Text("Matches all TLDs for a domain name")
         }
-    }
-
-    private func addPrefix() {
-        let prefix = newPrefixName.trimmedLowercased
-        guard !prefix.isEmpty, config.domainPrefixScoped[prefix] == nil else { return }
-        config.domainPrefixScoped[prefix] = []
-        newPrefixName = ""
-        saved = false
-    }
-
-    private func removePrefix(_ prefix: String) {
-        config.domainPrefixScoped.removeValue(forKey: prefix)
-        newPrefixParam.removeValue(forKey: prefix)
-        saved = false
-    }
-
-    private func addPrefixParam(prefix: String) {
-        let param = (newPrefixParam[prefix] ?? "").trimmedLowercased
-        guard !param.isEmpty, !(config.domainPrefixScoped[prefix]?.contains(param) ?? false) else { return }
-        config.domainPrefixScoped[prefix, default: []].append(param)
-        newPrefixParam[prefix] = ""
-        saved = false
-    }
-
-    private func removePrefixParam(prefix: String, param: String) {
-        config.domainPrefixScoped[prefix]?.removeAll { $0 == param }
-        if config.domainPrefixScoped[prefix]?.isEmpty == true {
-            config.domainPrefixScoped.removeValue(forKey: prefix)
-        }
-        saved = false
     }
 
     // MARK: - Shared Components
@@ -233,52 +178,32 @@ struct RulesEditorView: View {
 
     // MARK: - Status Bar
 
-    private var statusBar: some View {
+    private func statusBar(_ model: RulesEditorModel) -> some View {
         HStack {
-            if let error = errorMessage {
+            if let error = model.errorMessage {
                 Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.red)
                 Text(error).font(.caption).foregroundStyle(.red)
-            } else if saved {
+            } else if model.saved {
                 Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
                 Text("Saved").font(.caption).foregroundStyle(.green)
-            } else if hasChanges {
+            } else if model.hasChanges {
                 Image(systemName: "pencil.circle.fill").foregroundStyle(.orange)
                 Text("Unsaved changes").font(.caption).foregroundStyle(.orange)
             }
 
             Spacer()
 
-            Button("Reset to Defaults") {
-                config = .defaults
-                saved = false
-                errorMessage = nil
-            }
+            Button("Reset to Defaults") { model.reset() }
 
-            Button("Save") { save() }
+            Button("Save") { model.save() }
                 .keyboardShortcut("s")
-                .disabled(!hasChanges)
+                .disabled(!model.hasChanges)
         }
         .padding(10)
     }
-
-    private func save() {
-        do {
-            try store.save(config: config)
-            saved = true
-            errorMessage = nil
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-    }
 }
 
-private extension String {
-    var trimmedLowercased: String {
-        trimmingCharacters(in: .whitespaces).lowercased()
-    }
-}
-
-final class RulesEditorWindowController {
+final class RulesEditorWindowController: NSObject, NSWindowDelegate {
     private var window: NSWindow?
 
     func show(store: TrackingParamsStore) {
@@ -297,10 +222,15 @@ final class RulesEditorWindowController {
         )
         window.title = "Snip \u{2014} Tracking Rules"
         window.contentView = NSHostingView(rootView: view)
+        window.delegate = self
         window.center()
         window.isReleasedWhenClosed = false
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         self.window = window
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        window = nil
     }
 }
