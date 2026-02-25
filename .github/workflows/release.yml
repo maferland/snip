@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  release:
+    runs-on: macos-14
+    permissions:
+      contents: write
+    env:
+      SIGN_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Import signing certificate
+        if: env.SIGN_CERTIFICATE != ''
+        env:
+          SIGN_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          echo "$SIGN_CERTIFICATE" | base64 --decode > /tmp/certificate.p12
+          KEYCHAIN_PATH=/tmp/build.keychain
+          security create-keychain -p "" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "" "$KEYCHAIN_PATH"
+          security import /tmp/certificate.p12 -k "$KEYCHAIN_PATH" -P "$SIGN_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+
+          IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | head -1 | grep -o '"[^"]*"' | tr -d '"')
+          echo "SIGN_IDENTITY=$IDENTITY" >> "$GITHUB_ENV"
+
+      - name: Build, sign, notarize
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          NOTARIZE_PASSWORD: ${{ secrets.NOTARIZE_PASSWORD }}
+        run: ./scripts/package_app.sh "$GITHUB_REF_NAME"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="$GITHUB_REF_NAME"
+          DMG="Snip-${VERSION}-macos.dmg"
+          gh release create "$VERSION" "$DMG" \
+            --title "Snip ${VERSION}" \
+            --generate-notes
+
+      - name: Update homebrew tap
+        env:
+          GH_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
+        run: |
+          VERSION="$GITHUB_REF_NAME"
+          DMG="Snip-${VERSION}-macos.dmg"
+          ./scripts/update_homebrew_tap.sh "$VERSION" "$DMG"
