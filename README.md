@@ -4,6 +4,8 @@
 <img src="assets/icon.png" width="128" height="128" alt="Snip Icon">
 
 <p>Automatically strip tracking junk from URLs when you copy them</p>
+
+<img src="assets/popover.png" width="220" alt="Snip menu bar popover">
 </div>
 
 ---
@@ -43,6 +45,7 @@ Run `Snip`. A link icon appears in your menu bar. That's it.
 
 - **Enabled/Disabled** — Toggle cleaning on/off
 - **Start at Login** — Run automatically when you log in
+- **Edit Rules** — Customize which tracking params get stripped
 - **Quit** — Stop the app
 
 ## What Gets Removed
@@ -60,8 +63,10 @@ Run `Snip`. A link icon appears in your menu bar. That's it.
 | `_hsenc`, `_hsmi` | HubSpot |
 | `ref`, `ref_src` | Generic referral |
 | `s`, `t` | X/Twitter (domain-scoped) |
+| `pd_rd_*`, `pf_rd_*` | Amazon (domain-scoped) |
+| `_encoding`, `th`, `psc` | Amazon (domain-scoped) |
 
-[Full list in source](Snip/TrackingParams.swift)
+[Full list in source](Snip/TrackingParamsConfig.swift) — customizable via Edit Rules
 
 ## Privacy
 

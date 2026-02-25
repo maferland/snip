@@ -41,6 +41,11 @@ final class TrackingParamsStore: ObservableObject {
         config = newConfig
     }
 
+    func save(config: TrackingParamsConfig) throws {
+        try write(config)
+        self.config = config
+    }
+
     func reset() throws {
         try write(.defaults)
         config = .defaults

@@ -54,7 +54,6 @@ struct MenuBarView: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Toggle("", isOn: $settings.isEnabled)
-                        .toggleStyle(.switch)
                         .controlSize(.small)
                         .labelsHidden()
                     Text("Enabled")
@@ -65,7 +64,6 @@ struct MenuBarView: View {
 
                 HStack {
                     Toggle("", isOn: $launchAtLogin)
-                        .toggleStyle(.switch)
                         .controlSize(.small)
                         .labelsHidden()
                         .onChange(of: launchAtLogin) { _, newValue in
