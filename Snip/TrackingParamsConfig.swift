@@ -42,15 +42,7 @@ extension TrackingParamsConfig {
             "twitter.com": ["s", "t"],
         ],
         domainPrefixScoped: [
-            "amazon": [
-                "_encoding",
-                "pd_rd_i", "pd_rd_w", "pd_rd_wg", "pd_rd_r",
-                "pf_rd_p", "pf_rd_r",
-                "content-id",
-                "th", "psc",
-                "crid", "dib", "dib_tag",
-                "keywords", "qid", "sprefix", "sr",
-            ],
+            "amazon": ["*"],
         ]
     )
 }

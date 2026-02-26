@@ -35,14 +35,17 @@ final class URLSanitizer {
             let host = components.host?.lowercased()
                 .replacingOccurrences(of: "www.", with: "")
             let domainParams = domainParamsFor(host: host ?? "", config: config)
+            let stripAll = domainParams.contains("*")
 
             let originalItems = components.queryItems ?? []
             let filteredItems = originalItems.filter { item in
+                guard !stripAll else { return false }
                 let key = item.name.lowercased()
                 return !globalBlocklist.contains(key) && !domainParams.contains(key)
             }
 
             let removed = originalItems.filter {
+                guard !stripAll else { return true }
                 let key = $0.name.lowercased()
                 return globalBlocklist.contains(key) || domainParams.contains(key)
             }.map(\.name)
