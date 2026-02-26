@@ -9,15 +9,19 @@ struct TrackingParamsConfig: Codable, Equatable {
 extension TrackingParamsConfig {
     static let defaults = TrackingParamsConfig(
         global: [
-            // UTM (Google Analytics)
+            // UTM
             "utm_source", "utm_medium", "utm_campaign",
             "utm_term", "utm_content", "utm_id",
 
             // Facebook
             "fbclid", "fb_action_ids", "fb_action_types",
 
-            // Google
-            "gclid", "gclsrc", "dclid",
+            // Google Ads (appear on any destination site)
+            "gclid", "gclsrc", "dclid", "gbraid", "wbraid",
+            "gad_source", "gad_campaignid", "gad_adgroupid",
+
+            // Google Analytics cross-site
+            "_gl", "_ga", "gtm",
 
             // Microsoft/Bing
             "msclkid",
@@ -43,6 +47,35 @@ extension TrackingParamsConfig {
         ],
         domainPrefixScoped: [
             "amazon": ["*"],
+            "google": [
+                // Session & fingerprinting
+                "ei", "sei", "ved", "vet",
+                "sxsrf", "iflsig", "dpr",
+                "biw", "bih",
+
+                // Search suggestion/autocomplete
+                "aqs", "oq", "pq",
+                "gs_lcp", "gs_lp", "gs_lcrp", "gs_mss", "gs_ssp",
+
+                // Client & source
+                "sclient", "source", "sourceid",
+                "client", "channel", "esrc", "sca_esv", "sca_upv",
+
+                // Click/navigation
+                "sa", "uact", "cd", "cad", "usg",
+                "rlz",
+
+                // Encoding (browsers handle this)
+                "ie", "oe",
+
+                // UI interaction
+                "iact", "ndsp", "pbx", "scroll", "stick", "forward",
+                "cs", "csi", "cp",
+
+                // Preferences/misc
+                "prmd", "sc", "z", "npa",
+                "cshid", "fbs",
+            ],
         ]
     )
 }
