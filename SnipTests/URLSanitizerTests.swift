@@ -88,30 +88,22 @@ struct URLSanitizerTests {
         #expect(Set(result.removedParams) == Set(["s", "t"]))
     }
 
-    // MARK: - Amazon domain-prefix
+    // MARK: - Amazon (strip-all via wildcard)
 
-    @Test("strips Amazon tracking params from amazon.ca")
-    func stripsAmazonCa() {
-        let input = "https://www.amazon.ca/Product/dp/123?_encoding=UTF8&pd_rd_i=abc&pd_rd_w=rTtCm&content-id=amzn1.sym.abc&pf_rd_p=abc&pf_rd_r=XYZ&pd_rd_wg=xkSVl&pd_rd_r=f022b&th=1&psc=1"
+    @Test("strips all params from amazon.ca")
+    func stripsAllAmazonCa() {
+        let input = "https://www.amazon.ca/Product/dp/123?_encoding=UTF8&pd_rd_w=rTtCm&psc=1&crid=3NX&keywords=test"
         let result = sanitizer.sanitize(input)
         #expect(result.cleaned == "https://www.amazon.ca/Product/dp/123")
-        #expect(Set(result.removedParams) == Set(["_encoding", "pd_rd_i", "pd_rd_w", "content-id", "pf_rd_p", "pf_rd_r", "pd_rd_wg", "pd_rd_r", "th", "psc"]))
+        #expect(result.removedParams.count == 5)
     }
 
-    @Test("strips Amazon search tracking params from amazon.ca")
-    func stripsAmazonSearchParams() {
-        let input = "https://www.amazon.ca/Product/dp/B0B96WF3M7?crid=3NX&dib=eyJ2IjoiMSJ9&dib_tag=se&keywords=m2+pin&qid=1772066573&sprefix=m2+pin%2Caps%2C108&sr=8-11"
+    @Test("strips all params from amazon.com affiliate link")
+    func stripsAmazonAffiliate() {
+        let input = "https://www.amazon.com/dp/B09C19RQJP?psc=1&linkCode=sl1&tag=jash09-20&linkId=42620d1f&language=en_US&ref_=as_li_ss_tl"
         let result = sanitizer.sanitize(input)
-        #expect(result.cleaned == "https://www.amazon.ca/Product/dp/B0B96WF3M7")
-        #expect(Set(result.removedParams) == Set(["crid", "dib", "dib_tag", "keywords", "qid", "sprefix", "sr"]))
-    }
-
-    @Test("strips Amazon tracking params from amazon.com")
-    func stripsAmazonCom() {
-        let input = "https://www.amazon.com/dp/456?pd_rd_w=abc&ref=sr_1_1"
-        let result = sanitizer.sanitize(input)
-        #expect(result.cleaned == "https://www.amazon.com/dp/456")
-        #expect(Set(result.removedParams) == Set(["pd_rd_w", "ref"]))
+        #expect(result.cleaned == "https://www.amazon.com/dp/B09C19RQJP")
+        #expect(result.removedParams.count == 6)
     }
 
     @Test("uses custom config when provided")
