@@ -130,6 +130,59 @@ struct URLSanitizerTests {
         #expect(result.cleaned == "https://www.google.ca/search?q=test")
     }
 
+    // MARK: - YouTube
+
+    @Test("strips YouTube tracking, keeps video ID and timestamp")
+    func stripsYouTube() {
+        let input = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&feature=youtu.be&ab_channel=Test&si=abc123&t=42"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=42")
+    }
+
+    // MARK: - LinkedIn
+
+    @Test("strips LinkedIn tracking")
+    func stripsLinkedIn() {
+        let input = "https://www.linkedin.com/posts/user_activity-123?trk=feed&lipi=abc&licu=xyz"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.linkedin.com/posts/user_activity-123")
+    }
+
+    // MARK: - eBay
+
+    @Test("strips eBay tracking")
+    func stripsEbay() {
+        let input = "https://www.ebay.com/itm/12345?_trkparms=abc&_trksid=def&mkcid=1&mkrid=2"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.ebay.com/itm/12345")
+    }
+
+    @Test("strips eBay tracking on ebay.ca")
+    func stripsEbayCa() {
+        let input = "https://www.ebay.ca/itm/12345?_trksid=abc&campid=def"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.ebay.ca/itm/12345")
+    }
+
+    // MARK: - Reddit
+
+    @Test("strips Reddit tracking")
+    func stripsReddit() {
+        let input = "https://www.reddit.com/r/swift/comments/abc?correlation_id=xyz&ref_source=share&ref_campaign=share_link"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.reddit.com/r/swift/comments/abc")
+    }
+
+    // MARK: - New global trackers
+
+    @Test("strips TikTok and affiliate trackers")
+    func stripsNewGlobalTrackers() {
+        let input = "https://example.com/page?id=1&ttclid=abc&mkt_tok=def&awc=ghi"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://example.com/page?id=1")
+        #expect(Set(result.removedParams) == Set(["ttclid", "mkt_tok", "awc"]))
+    }
+
     @Test("uses custom config when provided")
     func usesCustomConfig() {
         let custom = TrackingParamsConfig(
