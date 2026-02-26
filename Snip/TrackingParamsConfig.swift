@@ -48,6 +48,8 @@ extension TrackingParamsConfig {
                 "pf_rd_p", "pf_rd_r",
                 "content-id",
                 "th", "psc",
+                "crid", "dib", "dib_tag",
+                "keywords", "qid", "sprefix", "sr",
             ],
         ]
     )
