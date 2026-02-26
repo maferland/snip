@@ -98,6 +98,14 @@ struct URLSanitizerTests {
         #expect(Set(result.removedParams) == Set(["_encoding", "pd_rd_i", "pd_rd_w", "content-id", "pf_rd_p", "pf_rd_r", "pd_rd_wg", "pd_rd_r", "th", "psc"]))
     }
 
+    @Test("strips Amazon search tracking params from amazon.ca")
+    func stripsAmazonSearchParams() {
+        let input = "https://www.amazon.ca/Product/dp/B0B96WF3M7?crid=3NX&dib=eyJ2IjoiMSJ9&dib_tag=se&keywords=m2+pin&qid=1772066573&sprefix=m2+pin%2Caps%2C108&sr=8-11"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.amazon.ca/Product/dp/B0B96WF3M7")
+        #expect(Set(result.removedParams) == Set(["crid", "dib", "dib_tag", "keywords", "qid", "sprefix", "sr"]))
+    }
+
     @Test("strips Amazon tracking params from amazon.com")
     func stripsAmazonCom() {
         let input = "https://www.amazon.com/dp/456?pd_rd_w=abc&ref=sr_1_1"
