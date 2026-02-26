@@ -106,6 +106,30 @@ struct URLSanitizerTests {
         #expect(result.removedParams.count == 6)
     }
 
+    // MARK: - Google search
+
+    @Test("strips Google search tracking, keeps query")
+    func stripsGoogleSearch() {
+        let input = "https://www.google.com/search?q=dowel+canadian+tire&sca_esv=abc&biw=1793&bih=1090&sxsrf=xyz&ei=abc&ved=0ah&uact=5&oq=dowel+canadian+tire&gs_lp=Egx&sclient=gws-wiz-serp"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.google.com/search?q=dowel+canadian+tire")
+    }
+
+    @Test("preserves Google search functional params")
+    func preservesGoogleFunctional() {
+        let input = "https://www.google.com/search?q=test&tbm=isch&tbs=isz:l&hl=en&safe=active&ei=abc&ved=0"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.google.com/search?q=test&tbm=isch&tbs=isz:l&hl=en&safe=active")
+        #expect(Set(result.removedParams) == Set(["ei", "ved"]))
+    }
+
+    @Test("strips Google search on google.ca")
+    func stripsGoogleCa() {
+        let input = "https://www.google.ca/search?q=test&ei=abc&ved=0&sclient=gws&rlz=xyz"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.google.ca/search?q=test")
+    }
+
     @Test("uses custom config when provided")
     func usesCustomConfig() {
         let custom = TrackingParamsConfig(
