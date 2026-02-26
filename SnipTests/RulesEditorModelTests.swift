@@ -135,50 +135,50 @@ struct RulesEditorModelTests {
     @Test("adds prefix")
     func addPrefix() {
         let (model, _) = makeModel()
-        model.addPrefix("ebay")
-        #expect(model.config.domainPrefixScoped["ebay"] != nil)
+        model.addPrefix("testprefix")
+        #expect(model.config.domainPrefixScoped["testprefix"] != nil)
     }
 
     @Test("prevents duplicate prefix")
     func addPrefixDuplicate() {
         let (model, _) = makeModel()
-        model.addPrefix("ebay")
-        model.addPrefix("ebay")
-        #expect(model.config.domainPrefixScoped["ebay"] == [])
+        model.addPrefix("testprefix")
+        model.addPrefix("testprefix")
+        #expect(model.config.domainPrefixScoped["testprefix"] == [])
     }
 
     @Test("removes prefix")
     func removePrefix() {
         let (model, _) = makeModel()
-        model.addPrefix("ebay")
-        model.removePrefix("ebay")
-        #expect(model.config.domainPrefixScoped["ebay"] == nil)
+        model.addPrefix("testprefix")
+        model.removePrefix("testprefix")
+        #expect(model.config.domainPrefixScoped["testprefix"] == nil)
     }
 
     @Test("adds prefix param")
     func addPrefixParam() {
         let (model, _) = makeModel()
-        model.addPrefix("ebay")
-        model.addPrefixParam(prefix: "ebay", param: "tracker")
-        #expect(model.config.domainPrefixScoped["ebay"] == ["tracker"])
+        model.addPrefix("testprefix")
+        model.addPrefixParam(prefix: "testprefix", param: "tracker")
+        #expect(model.config.domainPrefixScoped["testprefix"] == ["tracker"])
     }
 
     @Test("prevents duplicate prefix param")
     func addPrefixParamDuplicate() {
         let (model, _) = makeModel()
-        model.addPrefix("ebay")
-        model.addPrefixParam(prefix: "ebay", param: "dup")
-        model.addPrefixParam(prefix: "ebay", param: "dup")
-        #expect(model.config.domainPrefixScoped["ebay"] == ["dup"])
+        model.addPrefix("testprefix")
+        model.addPrefixParam(prefix: "testprefix", param: "dup")
+        model.addPrefixParam(prefix: "testprefix", param: "dup")
+        #expect(model.config.domainPrefixScoped["testprefix"] == ["dup"])
     }
 
     @Test("removes prefix param and auto-removes prefix")
     func removePrefixParam() {
         let (model, _) = makeModel()
-        model.addPrefix("ebay")
-        model.addPrefixParam(prefix: "ebay", param: "tracker")
-        model.removePrefixParam(prefix: "ebay", param: "tracker")
-        #expect(model.config.domainPrefixScoped["ebay"] == nil)
+        model.addPrefix("testprefix")
+        model.addPrefixParam(prefix: "testprefix", param: "tracker")
+        model.removePrefixParam(prefix: "testprefix", param: "tracker")
+        #expect(model.config.domainPrefixScoped["testprefix"] == nil)
     }
 
     // MARK: - Persistence
