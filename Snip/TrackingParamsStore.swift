@@ -6,8 +6,22 @@ final class TrackingParamsStore: ObservableObject {
 
     private let fileURL: URL
 
+    private static let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        return encoder
+    }()
+
     static var defaultURL: URL {
-        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        guard let appSupport = FileManager.default.urls(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask
+        ).first else {
+            return FileManager.default.temporaryDirectory
+                .appendingPathComponent("Snip")
+                .appendingPathComponent("tracking_params.json")
+        }
+        return appSupport
             .appendingPathComponent("Snip")
             .appendingPathComponent("tracking_params.json")
     }
@@ -23,9 +37,7 @@ final class TrackingParamsStore: ObservableObject {
     }
 
     var jsonString: String {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        guard let data = try? encoder.encode(config),
+        guard let data = try? Self.encoder.encode(config),
               let string = String(data: data, encoding: .utf8) else {
             return "{}"
         }
@@ -52,9 +64,7 @@ final class TrackingParamsStore: ObservableObject {
     }
 
     private func write(_ config: TrackingParamsConfig) throws {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        let data = try encoder.encode(config)
+        let data = try Self.encoder.encode(config)
         let dir = fileURL.deletingLastPathComponent()
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         try data.write(to: fileURL)

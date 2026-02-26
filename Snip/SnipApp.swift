@@ -1,4 +1,7 @@
 import SwiftUI
+import os
+
+private let logger = Logger(subsystem: "com.snip.app", category: "SnipApp")
 
 @main
 struct SnipApp: App {
@@ -18,7 +21,7 @@ struct SnipApp: App {
         .menuBarExtraStyle(.window)
         .onChange(of: appDelegate.monitor.lastResult) { _, result in
             if let result, result.didChange {
-                print("URL Cleaned: removed \(result.removedParams.joined(separator: ", "))")
+                logger.info("URL Cleaned: removed \(result.removedParams.joined(separator: ", "))")
             }
         }
     }

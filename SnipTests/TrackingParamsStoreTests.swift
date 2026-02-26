@@ -50,6 +50,20 @@ struct TrackingParamsStoreTests {
         #expect(store.config == .defaults)
     }
 
+    @Test("saves config directly")
+    func savesConfigDirectly() throws {
+        let url = tempURL()
+        let store = TrackingParamsStore(url: url)
+
+        var custom = TrackingParamsConfig.defaults
+        custom.global = ["only_this"]
+        try store.save(config: custom)
+        #expect(store.config.global == ["only_this"])
+
+        let reloaded = TrackingParamsStore(url: url)
+        #expect(reloaded.config.global == ["only_this"])
+    }
+
     @Test("jsonString produces valid JSON")
     func jsonStringIsValid() throws {
         let store = TrackingParamsStore(url: tempURL())

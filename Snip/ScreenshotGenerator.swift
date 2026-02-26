@@ -28,7 +28,7 @@ private struct RenderedSwitchStyle: ToggleStyle {
 
 enum ScreenshotGenerator {
     @MainActor static func generate(outputPath: String, scale: CGFloat = 3.0) {
-        let settings = SettingsStore(userDefaults: UserDefaults(suiteName: "screenshot-\(UUID())")!)
+        let settings = SettingsStore(userDefaults: UserDefaults(suiteName: "screenshot-\(UUID())") ?? .standard)
         settings.isEnabled = true
 
         let store = TrackingParamsStore(url: URL(filePath: "/dev/null"))

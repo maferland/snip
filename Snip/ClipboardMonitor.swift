@@ -54,13 +54,13 @@ final class ClipboardMonitor: ObservableObject {
         let currentCount = provider.changeCount
 
         guard currentCount != lastChangeCount else { return }
-        lastChangeCount = currentCount
 
         if let lastSanitizedAt = lastSanitizedAt,
            Date().timeIntervalSince(lastSanitizedAt) < debounceInterval {
             return
         }
 
+        lastChangeCount = currentCount
         guard let text = provider.string() else { return }
 
         let result = sanitizer.sanitize(text, config: trackingStore.config)
