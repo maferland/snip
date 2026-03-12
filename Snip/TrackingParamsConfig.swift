@@ -114,6 +114,7 @@ extension TrackingParamsConfig {
 
             // LinkedIn
             "linkedin": [
+                "rcm",
                 "trk", "trkinfo", "trackingid",
                 "lipi", "licu",
                 "refid", "original_referer",
