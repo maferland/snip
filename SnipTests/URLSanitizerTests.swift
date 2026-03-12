@@ -148,6 +148,14 @@ struct URLSanitizerTests {
         #expect(result.cleaned == "https://www.linkedin.com/posts/user_activity-123")
     }
 
+    @Test("strips LinkedIn rcm param")
+    func stripsLinkedInRcm() {
+        let input = "https://www.linkedin.com/posts/vishesh-dwivedi-researcher_title-7437434800073842688-9YKq?rcm=ACoAABP-gQoBhJzibDr41pke-Zb4LG5gq6WIm5U"
+        let result = sanitizer.sanitize(input)
+        #expect(result.cleaned == "https://www.linkedin.com/posts/vishesh-dwivedi-researcher_title-7437434800073842688-9YKq")
+        #expect(result.removedParams == ["rcm"])
+    }
+
     // MARK: - eBay
 
     @Test("strips eBay tracking")
