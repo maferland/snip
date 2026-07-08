@@ -2,7 +2,7 @@ import ServiceManagement
 import os
 
 enum LaunchAtLogin {
-    private static let logger = Logger(subsystem: "com.snip.app", category: "LaunchAtLogin")
+    private static let logger = Logger(subsystem: "com.maferland.snip", category: "LaunchAtLogin")
 
     static var isEnabled: Bool {
         SMAppService.mainApp.status == .enabled

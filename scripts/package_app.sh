@@ -10,6 +10,9 @@ DMG_NAME="${APP_NAME}-${VERSION}-macos.dmg"
 BUNDLE_ID="com.maferland.snip"
 EXECUTABLE="${BUILD_DIR}/${APP_NAME}"
 
+# CFBundleVersion / CFBundleShortVersionString must be numeric (no "v" prefix)
+NUMERIC_VERSION="${VERSION#v}"
+
 echo "📦 Packaging ${APP_NAME} ${VERSION}..."
 
 # Build release binary
@@ -38,9 +41,9 @@ cat > "${APP_BUNDLE}/Contents/Info.plist" << EOF
     <key>CFBundleDisplayName</key>
     <string>${APP_NAME}</string>
     <key>CFBundleVersion</key>
-    <string>${VERSION}</string>
+    <string>${NUMERIC_VERSION}</string>
     <key>CFBundleShortVersionString</key>
-    <string>${VERSION}</string>
+    <string>${NUMERIC_VERSION}</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleIconFile</key>

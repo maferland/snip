@@ -1,7 +1,7 @@
 import SwiftUI
 import os
 
-private let logger = Logger(subsystem: "com.snip.app", category: "SnipApp")
+private let logger = Logger(subsystem: "com.maferland.snip", category: "SnipApp")
 
 @main
 struct SnipApp: App {

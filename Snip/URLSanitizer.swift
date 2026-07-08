@@ -32,9 +32,11 @@ final class URLSanitizer {
                 continue
             }
 
-            let host = components.host?.lowercased()
-                .replacingOccurrences(of: "www.", with: "")
-            let domainParams = domainParamsFor(host: host ?? "", config: config)
+            var host = components.host?.lowercased() ?? ""
+            if host.hasPrefix("www.") {
+                host = String(host.dropFirst(4))
+            }
+            let domainParams = domainParamsFor(host: host, config: config)
             let stripAll = domainParams.contains("*")
 
             let originalItems = components.queryItems ?? []
