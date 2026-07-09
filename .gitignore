@@ -6,3 +6,4 @@ DerivedData/
 *.dmg
 *.app/
 .DS_Store
+.vercel
