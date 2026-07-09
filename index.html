@@ -928,7 +928,7 @@
 
       function renderDemo(scenario, snipped = [], active = -1, clean = false) {
         scenarioLabel.textContent = scenario.label;
-        stripBadge.hidden = !clean;
+        stripBadge.hidden = snipped.length === 0;
         stripBadge.textContent = `✓ ${snipped.length} stripped`;
         urlDemo.innerHTML = "";
 
@@ -937,10 +937,11 @@
         base.style.color = clean ? "var(--green)" : "var(--text)";
         urlDemo.appendChild(base);
 
+        let visibleParamIndex = 0;
         scenario.params.forEach(([key, value], index) => {
-          if (clean && snipped.includes(index)) return;
+          if (snipped.includes(index)) return;
           const param = document.createElement("span");
-          param.textContent = `${index === 0 ? "?" : "&"}${key}=${value}`;
+          param.textContent = `${visibleParamIndex === 0 ? "?" : "&"}${key}=${value}`;
           param.style.color = "var(--orange)";
           if (active === index) {
             param.style.background = "var(--orange-bg)";
@@ -948,6 +949,7 @@
             param.style.padding = "1px 4px";
           }
           urlDemo.appendChild(param);
+          visibleParamIndex += 1;
         });
       }
 
