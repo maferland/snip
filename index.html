@@ -135,14 +135,6 @@
         );
       }
 
-      .rain {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-      }
-
       .hero {
         position: relative;
         z-index: 1;
@@ -599,7 +591,6 @@
 
     <main>
       <div class="hero-wrap">
-        <canvas class="rain" id="rain"></canvas>
         <section class="hero">
           <div class="hero-eyebrow">
             <span>✂</span>
@@ -1066,58 +1057,6 @@
         }, 1800);
       });
 
-      const canvas = document.getElementById("rain");
-      const context = canvas.getContext("2d");
-      const rainParams = [
-        "utm_source",
-        "fbclid",
-        "gclid",
-        "dclid",
-        "mc_cid",
-        "_hsenc",
-        "si",
-        "trk",
-        "ref_src",
-        "mkt_tok",
-        "msclkid",
-        "s_kwcid",
-      ];
-      let items = [];
-
-      function resizeCanvas() {
-        const parent = canvas.parentElement;
-        canvas.width = parent.offsetWidth;
-        canvas.height = parent.offsetHeight;
-        const count = 34;
-        items = Array.from({ length: count }, (_, index) => ({
-          x: (canvas.width / count) * index + Math.random() * (canvas.width / count),
-          y: Math.random() * canvas.height,
-          speed: 0.18 + Math.random() * 0.34,
-          opacity: 0.07 + Math.random() * 0.08,
-          text: rainParams[Math.floor(Math.random() * rainParams.length)],
-        }));
-      }
-
-      function drawRain() {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.font = "12px 'DM Mono', monospace";
-        items.forEach(item => {
-          context.globalAlpha = item.opacity;
-          context.fillStyle = "#16150F";
-          context.fillText(item.text, item.x, item.y);
-          item.y += item.speed;
-          if (item.y > canvas.height + 24) {
-            item.y = -14;
-            item.text = rainParams[Math.floor(Math.random() * rainParams.length)];
-          }
-        });
-        context.globalAlpha = 1;
-        requestAnimationFrame(drawRain);
-      }
-
-      resizeCanvas();
-      drawRain();
-      new ResizeObserver(resizeCanvas).observe(canvas.parentElement);
     </script>
   </body>
 </html>
