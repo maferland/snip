@@ -233,8 +233,11 @@
       }
 
       .badge {
+        display: inline-block;
+        min-width: 82px;
         color: var(--green);
         font-size: 11px;
+        text-align: right;
         white-space: nowrap;
       }
 
@@ -248,6 +251,21 @@
         background: #f7f6f2;
         border: 1px solid rgb(22 21 15 / 6%);
         border-radius: 10px;
+      }
+
+      .url-param {
+        border-radius: 3px;
+        color: var(--orange);
+        transition: background-color 180ms ease, filter 220ms ease, opacity 220ms ease;
+      }
+
+      .url-param.is-active {
+        background: var(--orange-bg);
+      }
+
+      .url-param.is-exiting {
+        filter: blur(2px);
+        opacity: 0;
       }
 
       .button-row {
@@ -575,6 +593,10 @@
         .hero-eyebrow {
           align-items: flex-start;
           text-align: left;
+        }
+
+        .url {
+          min-height: 93px;
         }
       }
     </style>
@@ -926,7 +948,7 @@
       const urlDemo = document.getElementById("url-demo");
       let scenarioIndex = 0;
 
-      function renderDemo(scenario, snipped = [], active = -1, clean = false) {
+      function renderDemo(scenario, snipped = [], active = -1, clean = false, exiting = -1) {
         scenarioLabel.textContent = scenario.label;
         stripBadge.hidden = snipped.length === 0;
         stripBadge.textContent = `✓ ${snipped.length} stripped`;
@@ -941,12 +963,13 @@
         scenario.params.forEach(([key, value], index) => {
           if (snipped.includes(index)) return;
           const param = document.createElement("span");
+          param.className = "url-param";
           param.textContent = `${visibleParamIndex === 0 ? "?" : "&"}${key}=${value}`;
-          param.style.color = "var(--orange)";
           if (active === index) {
-            param.style.background = "var(--orange-bg)";
-            param.style.borderRadius = "3px";
-            param.style.padding = "1px 4px";
+            param.classList.add("is-active");
+          }
+          if (exiting === index) {
+            param.classList.add("is-exiting");
           }
           urlDemo.appendChild(param);
           visibleParamIndex += 1;
@@ -962,6 +985,8 @@
         [...scenario.params.keys()].reverse().forEach(index => {
           setTimeout(() => renderDemo(scenario, snipped, index), delay);
           delay += 650;
+          setTimeout(() => renderDemo(scenario, snipped, index, false, index), delay);
+          delay += 240;
           setTimeout(() => {
             snipped.push(index);
             renderDemo(scenario, snipped);
