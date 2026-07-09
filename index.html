@@ -724,6 +724,155 @@
         "utm_source",
         "utm_medium",
         "utm_campaign",
+        "utm_term",
+        "utm_content",
+        "utm_id",
+        "utm_cid",
+        "utm_creative",
+        "utm_keyword",
+        "fbclid",
+        "fb_action_ids",
+        "fb_action_types",
+        "fb_ref",
+        "fb_source",
+        "gclid",
+        "gclsrc",
+        "dclid",
+        "gbraid",
+        "wbraid",
+        "gad_source",
+        "gad_campaignid",
+        "gad_adgroupid",
+        "srsltid",
+        "_gl",
+        "_ga",
+        "gtm",
+        "msclkid",
+        "ttclid",
+        "twclid",
+        "yclid",
+        "ysclid",
+        "si",
+        "awc",
+        "cjevent",
+        "cjdata",
+        "irgwc",
+        "irclickid",
+        "_hsenc",
+        "_hsmi",
+        "hsctatracking",
+        "__hsfp",
+        "__hssc",
+        "__hstc",
+        "mkt_tok",
+        "mtm_campaign",
+        "mtm_cid",
+        "mtm_content",
+        "mtm_medium",
+        "mtm_source",
+        "pk_campaign",
+        "pk_medium",
+        "pk_source",
+        "_branch_match_id",
+        "_branch_referrer",
+        "ref",
+        "ref_src",
+        "ref_url",
+        "mc_eid",
+        "mc_cid",
+        "oly_enc_id",
+        "oly_anon_id",
+        "vero_id",
+        "vero_conv",
+        "s_kwcid",
+        "s_cid",
+        "igshid",
+      ];
+
+      const domainScopedParams = {
+        "x.com": ["s", "t"],
+        "twitter.com": ["s", "t"],
+      };
+
+      const domainPrefixScopedParams = {
+        amazon: ["*"],
+        google: [
+          "ei",
+          "sei",
+          "ved",
+          "vet",
+          "sxsrf",
+          "iflsig",
+          "dpr",
+          "biw",
+          "bih",
+          "aqs",
+          "oq",
+          "pq",
+          "gs_lcp",
+          "gs_lp",
+          "gs_lcrp",
+          "gs_mss",
+          "gs_ssp",
+          "sclient",
+          "source",
+          "sourceid",
+          "client",
+          "channel",
+          "esrc",
+          "sca_esv",
+          "sca_upv",
+          "sa",
+          "uact",
+          "cd",
+          "cad",
+          "usg",
+          "rlz",
+          "ie",
+          "oe",
+          "iact",
+          "ndsp",
+          "pbx",
+          "scroll",
+          "stick",
+          "forward",
+          "cs",
+          "csi",
+          "cp",
+          "prmd",
+          "sc",
+          "z",
+          "npa",
+          "cshid",
+          "fbs",
+        ],
+        youtube: ["feature", "kw", "pp", "ab_channel"],
+        linkedin: [
+          "rcm",
+          "trk",
+          "trkinfo",
+          "trackingid",
+          "lipi",
+          "licu",
+          "refid",
+          "original_referer",
+        ],
+        ebay: [
+          "_trkparms",
+          "_trksid",
+          "hash",
+          "mkcid",
+          "mkrid",
+          "campid",
+          "toolid",
+        ],
+        reddit: ["correlation_id", "ref_source", "ref_campaign"],
+      };
+
+      const displayTrackingParams = [
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
         "utm_content",
         "utm_term",
         "utm_id",
@@ -737,7 +886,6 @@
         "_hsenc",
         "yclid",
         "s_kwcid",
-        "ef_id",
         "ref",
       ];
 
@@ -771,7 +919,7 @@
       ];
 
       const chips = document.getElementById("chips");
-      trackingParams.forEach(param => {
+      displayTrackingParams.forEach(param => {
         const chip = document.createElement("span");
         chip.className = "chip";
         chip.textContent = param;
@@ -836,10 +984,33 @@
       }
       runScenario();
 
+      function normalizedHost(url) {
+        const host = url.hostname.toLowerCase();
+        return host.startsWith("www.") ? host.slice(4) : host;
+      }
+
+      function domainParamsFor(host) {
+        const params = new Set(domainScopedParams[host] ?? []);
+        Object.entries(domainPrefixScopedParams).forEach(([prefix, prefixParams]) => {
+          if (host.startsWith(`${prefix}.`)) {
+            prefixParams.forEach(param => params.add(param));
+          }
+        });
+        return params;
+      }
+
       function strippedParams(value) {
         try {
           const url = new URL(value);
-          return trackingParams.filter(param => url.searchParams.has(param));
+          const domainParams = domainParamsFor(normalizedHost(url));
+          if (domainParams.has("*")) {
+            return [...new Set([...url.searchParams.keys()])];
+          }
+          const globalParams = new Set(trackingParams);
+          return [...new Set([...url.searchParams.keys()].filter(param => {
+            const key = param.toLowerCase();
+            return globalParams.has(key) || domainParams.has(key);
+          }))];
         } catch {
           return [];
         }
@@ -848,7 +1019,8 @@
       function cleanUrl(value) {
         try {
           const url = new URL(value);
-          trackingParams.forEach(param => url.searchParams.delete(param));
+          const stripped = strippedParams(value);
+          stripped.forEach(param => url.searchParams.delete(param));
           return url.toString();
         } catch {
           return value;
@@ -896,26 +1068,39 @@
 
       const canvas = document.getElementById("rain");
       const context = canvas.getContext("2d");
-      const rainParams = [...trackingParams, "si"];
+      const rainParams = [
+        "utm_source",
+        "fbclid",
+        "gclid",
+        "dclid",
+        "mc_cid",
+        "_hsenc",
+        "si",
+        "trk",
+        "ref_src",
+        "mkt_tok",
+        "msclkid",
+        "s_kwcid",
+      ];
       let items = [];
 
       function resizeCanvas() {
         const parent = canvas.parentElement;
         canvas.width = parent.offsetWidth;
         canvas.height = parent.offsetHeight;
-        const count = 22;
+        const count = 34;
         items = Array.from({ length: count }, (_, index) => ({
           x: (canvas.width / count) * index + Math.random() * (canvas.width / count),
           y: Math.random() * canvas.height,
-          speed: 0.22 + Math.random() * 0.28,
-          opacity: 0.028 + Math.random() * 0.04,
+          speed: 0.18 + Math.random() * 0.34,
+          opacity: 0.07 + Math.random() * 0.08,
           text: rainParams[Math.floor(Math.random() * rainParams.length)],
         }));
       }
 
       function drawRain() {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.font = "11px 'DM Mono', monospace";
+        context.font = "12px 'DM Mono', monospace";
         items.forEach(item => {
           context.globalAlpha = item.opacity;
           context.fillStyle = "#16150F";
