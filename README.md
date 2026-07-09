@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="brand/snip-wordmark-dark.png" width="340" alt="snip.">
+<img src="brand/icons/snip-mark-256.png" width="128" height="128" alt="Snip logo">
 
 <p>Automatically strip tracking junk from URLs when you copy them</p>
 </div>
