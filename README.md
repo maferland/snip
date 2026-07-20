@@ -1,7 +1,6 @@
 <div align="center">
-<h1>✂️ Snip</h1>
 
-<img src="assets/icon.png" width="128" height="128" alt="Snip Icon">
+<img src="brand/icons/snip-mark-256.png" width="128" height="128" alt="Snip logo">
 
 <p>Automatically strip tracking junk from URLs when you copy them</p>
 </div>
